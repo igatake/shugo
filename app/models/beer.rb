@@ -5,4 +5,8 @@ class Beer < ApplicationRecord
   validates :shop_name, presence: true
   validates :shop_address, presence: true
   validates :shop_url, presence: true
+
+    def self.fetch_beers
+      
+    end
 end
