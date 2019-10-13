@@ -1,4 +1,6 @@
 class Beer < ApplicationRecord
+  include BeerLevenshteinModule
+
   validates :beer_name, presence: true
   validates :beer_price, presence: true
   validates :beer_genre, presence: true
@@ -74,22 +76,23 @@ class Beer < ApplicationRecord
 
               drinks.each do |drink|
                 # drink名取得
-                drink_name = drink.text.gsub("\"", "")
+                beer_name = drink.text.gsub("\"", "")
 
                 # drink値段取得かつ数字のみに変換
-                drink_price = doc_drink.xpath(
+                beer_price = doc_drink.xpath(
                   "//dl[@class='price' and position()=#{drink_num}]/dd"
                 ).text.gsub(/[^\d]/, '').to_i
 
                 # 一つ目の条件で入っててほしい単語を指定
                 # 二つ目の条件で入ってて欲しくない単語を指定
                 # 将来的には綺麗にしたい
-                if (/ビール|アサヒ|キリン|サッポロ|ヱビスビール|エビス|モルツ/ =~ drink_name) &&
-                  (/金麦|ノンアルコール|ベース|ゼロ|フリー|零|甘太郎|クリア|ホップ|シャンディ|トマト|レッド|カシス|オレンジ|カンパリ/ !~ drink_name) &&
-                  (drink_name.length <= 25) && # 25文字以上の生ビールないでしょ
-                  (drink_price != 0) && # priceがたまに0のがあるから排除
-                  (drink_price <= 1000) then #1000円以上のビールは飲み放題とかかぶるからなし
-                  p store_array.push(drink_name, drink_price, shop_name, shop_url, shop_address)
+                if (/ビール|アサヒ|キリン|サッポロ|ヱビスビール|エビス|モルツ/ =~ beer_name) &&
+                  (/金麦|ノンアルコール|ベース|ゼロ|フリー|零|甘太郎|クリア|ホップ|シャンディ|トマト|レッド|カシス|オレンジ|カンパリ/ !~ beer_name) &&
+                  (beer_name.length <= 25) && # 25文字以上の生ビールないでしょ
+                  (beer_price != 0) && # priceがたまに0のがあるから排除
+                  (beer_price <= 1000) then #1000円以上のビールは飲み放題とかかぶるからなし
+                  beer_genre = levenshtein.beer_classify(beer_name)
+                  p store_array.push(beer_name, beer_price, beer_genre, shop_name, shop_url, shop_address)
                   store_array = []
                 end
                   drink_num += 1
