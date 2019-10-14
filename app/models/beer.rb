@@ -1,14 +1,10 @@
 class Beer < ApplicationRecord
-  include BeerLevenshteinModule
-
   validates :beer_name, presence: true
   validates :beer_price, presence: true
   validates :beer_genre, presence: true
   validates :shop_name, presence: true
   validates :shop_address, presence: true
   validates :shop_url, presence: true
-
-
 
   def self.fetch_beers
     url = 'https://www.hotpepper.jp/yoyaku/SA11/Y050/'
@@ -20,14 +16,13 @@ class Beer < ApplicationRecord
         end
       end
 
-        # あるエリアのページを巡回
+      # あるエリアのページを巡回
       anemone.on_every_page do |page|
         puts "〜〜〜〜〜〜〜〜〜〜〜〜〜#{page_nm}目〜〜〜〜〜〜〜〜〜〜〜〜"
-        puts page.url
 
         page_nm += 1
         begin
-          html = URI(page.url).read
+          html = p URI(page.url).read
 
           # 各ページのHTML解析
           doc = Nokogiri::HTML(html, nil, 'utf-8')
@@ -70,13 +65,13 @@ class Beer < ApplicationRecord
               store_array = []
 
               # drinkメニューHTML取得
-              drinks =  doc_drink.xpath(
+              drinks = doc_drink.xpath(
                 "//div[@class='shopInner']/h3"
               )
 
               drinks.each do |drink|
                 # drink名取得
-                beer_name = drink.text.gsub("\"", "")
+                beer_name = drink.text.gsub('\"', '')
 
                 # drink値段取得かつ数字のみに変換
                 beer_price = doc_drink.xpath(
@@ -90,12 +85,11 @@ class Beer < ApplicationRecord
                   (/金麦|ノンアルコール|ベース|ゼロ|フリー|零|甘太郎|クリア|ホップ|シャンディ|トマト|レッド|カシス|オレンジ|カンパリ/ !~ beer_name) &&
                   (beer_name.length <= 25) && # 25文字以上の生ビールないでしょ
                   (beer_price != 0) && # priceがたまに0のがあるから排除
-                  (beer_price <= 1000) then #1000円以上のビールは飲み放題とかかぶるからなし
-                  beer_genre = levenshtein.beer_classify(beer_name)
-                  p store_array.push(beer_name, beer_price, beer_genre, shop_name, shop_url, shop_address)
+                  (beer_price <= 1000)  #1000円以上のビールは飲み放題とかかぶるからなし
+                  p store_array.push(beer_name, beer_price, shop_name, shop_url, shop_address)
                   store_array = []
                 end
-                  drink_num += 1
+                drink_num += 1
               end
             rescue => e
               p e
