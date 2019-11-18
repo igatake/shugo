@@ -79,6 +79,7 @@ namespace :crawl_hp do
               shop = Shop.find_or_initialize_by(shop_url: shop_url, shop_address: shop_address)
               shop.shop_name = shop_name
               shop.crawled_at = date
+              p shop
               shop.save!
             rescue => e
               scrape_log = Logger.new("log/scrape.log", 2, 10 * 1024)
@@ -110,6 +111,7 @@ namespace :crawl_hp do
                   drink = shop.drinks.find_or_initialize_by(drink_name: drink_name)
                   drink.drink_price = drink_price
                   drink.crawled_at = date
+                  p drink
                   drink.save!
                 end
                 drink_num += 1

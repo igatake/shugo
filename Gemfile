@@ -32,6 +32,8 @@ gem 'anemone'
 gem 'levenshtein'
 gem 'dotenv-rails'
 gem 'http'
+gem 'haml-rails'
+gem 'gon'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
