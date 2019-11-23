@@ -220,7 +220,7 @@ namespace :crawl_hp do
       res = HTTP.get(uri).to_s
       response = JSON.parse(res)
       check = response["status"]
-      if check != "ZERO_RESULTS"
+      if check == "OK"
         shop.shop_lat = response["results"][0]["geometry"]["location"]["lat"]
         shop.shop_lon = response["results"][0]["geometry"]["location"]["lng"]
         shop.save!
@@ -230,7 +230,7 @@ namespace :crawl_hp do
       end
     end
 
-    shops = Shop.all
+    shops = Shop.where(shop_lon: nil)
     shops.each do |shop|
       geocode(shop) unless shop.shop_lon?
     end
