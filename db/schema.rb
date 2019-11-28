@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_11_17_202844) do
+ActiveRecord::Schema.define(version: 2019_11_28_163026) do
 
   create_table "drink_genres", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "genre_name"
@@ -41,8 +41,8 @@ ActiveRecord::Schema.define(version: 2019_11_17_202844) do
     t.string "shop_name", null: false
     t.string "shop_address", null: false
     t.string "shop_url", null: false
-    t.float "shop_lat"
-    t.float "shop_lon"
+    t.decimal "shop_lat", precision: 10, scale: 7
+    t.decimal "shop_lon", precision: 10, scale: 7
     t.date "crawled_at"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false

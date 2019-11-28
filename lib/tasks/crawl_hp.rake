@@ -221,19 +221,24 @@ namespace :crawl_hp do
       response = JSON.parse(res)
       check = response["status"]
       if check == "OK"
-        shop.shop_lat = response["results"][0]["geometry"]["location"]["lat"]
-        shop.shop_lon = response["results"][0]["geometry"]["location"]["lng"]
+        shop.shop_lat = p response["results"][0]["geometry"]["location"]["lat"]
+        shop.shop_lon = p response["results"][0]["geometry"]["location"]["lng"]
         shop.save!
+        shop = Shop.first
+        puts shop.shop_lon
+        puts shop.shop_lat
       else
         scrape_log = Logger.new("log/scrape.log", 2, 10 * 1024)
         scrape_log.error("Not Found #{shop.shop_name} : #{shop.shop_address}")
       end
     end
 
-    shops = Shop.where(shop_lon: nil)
-    shops.each do |shop|
-      geocode(shop) unless shop.shop_lon?
-    end
+    # shops = Shop.where(shop_lon: nil)
+    shops = Shop.first
+    # shops.each do |shop|
+      # geocode(shop) unless shop.shop_lon?
+      geocode(shops)
+    # end
   end
 
   desc "scraping sequence"
