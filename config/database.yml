@@ -6,6 +6,8 @@
 #
 default: &default
   adapter: mysql2
+  charset: utf8
+  collation: utf8
   encodeing: utf8
   reconnect: false
   database: shugo_development
@@ -13,6 +15,7 @@ default: &default
   username: <%= ENV['RAILS_DATABASE_USER'] %>
   password: <%= ENV['RAILS_DATABASE_PASSWORD'] %>
   host: localhost
+  socket: /tmp/mysql.sock
 
 development:
   <<: *default
