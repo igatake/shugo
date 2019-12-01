@@ -8,4 +8,6 @@ environment.plugins.append('Provide', new webpack.ProvidePlugin({
   Popper: ['popper.js', 'default']
 }))
 
+environment.config.set('output.library', ['Packs', '[name]'])
+
 module.exports = environment

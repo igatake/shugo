@@ -4,12 +4,13 @@
 // that code so it'll be compiled.
 import "bootstrap"
 import "../stylesheets/application"
+import "../javascripts/application"
 
 require("@rails/ujs").start()
 require("turbolinks").start()
 require("@rails/activestorage").start()
 require("channels")
-require("maps")
+require.context('../images', true)
 
 
 
