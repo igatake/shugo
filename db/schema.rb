@@ -12,13 +12,13 @@
 
 ActiveRecord::Schema.define(version: 2019_11_28_163026) do
 
-  create_table "drink_genres", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "drink_genres", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "genre_name"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end
 
-  create_table "drinks", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "drinks", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "drink_name", null: false
     t.integer "drink_price", null: false
     t.integer "drink_genre_id"
@@ -28,7 +28,7 @@ ActiveRecord::Schema.define(version: 2019_11_28_163026) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
-  create_table "shop_drinks", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "shop_drinks", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.bigint "shop_id", null: false
     t.bigint "drink_genre_id", null: false
     t.datetime "created_at", precision: 6, null: false
@@ -37,7 +37,7 @@ ActiveRecord::Schema.define(version: 2019_11_28_163026) do
     t.index ["shop_id"], name: "index_shop_drinks_on_shop_id"
   end
 
-  create_table "shops", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "shops", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "shop_name", null: false
     t.string "shop_address", null: false
     t.string "shop_url", null: false

@@ -6,9 +6,9 @@
 #
 default: &default
   adapter: mysql2
-  charset: utf8
-  collation: utf8
-  encodeing: utf8
+  charset: utf8mb4
+  collation: utf8mb4_general_ci
+  encodeing: utf8mb4
   reconnect: false
   database: shugo_development
   pool: 5
