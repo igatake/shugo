@@ -1,44 +1,77 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
-  <head>
-    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
-    <title>Simple Map</title>
-    <meta content="initial-scale=1.0" name="viewport"/>
-    <meta charset="utf-8"/>
-  </head>
-  <body>
-    <div id="map"></div>
-    <script>
-    // 現在地取得処理
+
+<head>
+  <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+  <title>Simple Map</title>
+  <meta content="initial-scale=1.0" name="viewport" />
+  <meta charset="utf-8" />
+</head>
+
+<body>
+  <input type="submit" value='現在地' onclick='geolocation()'>
+  <form name="geocede" id="geoform">
+    <input id="address" type="textbox" value="池袋">
+    <input type="submit" value="検索" onclick="codeAddress()">
+  </form>
+  <div id="map"></div>
+  <script>
+    var map
+    var geocoder
+    var marker = null;
+
     function initMap() {
-      // Geolocation APIに対応している
+      geocoder = new google.maps.Geocoder()
+
+      var mapOptions = {
+        disableDefaultUI: true,
+        zoom: 17, // 拡大倍率
+        center: {
+          lat: 35.7299504,
+          lng: 139.7000289
+        } // 緯度・経度
+      };
+
+      map = new google.maps.Map(
+        document.getElementById('map'),
+        mapOptions
+      );
+
+      var box = document.getElementById('geoform')
+      box.index = 1;
+      map.controls[google.maps.ControlPosition.TOP_CENTER].push(box);
+
+    }
+
+    function deleteMarker() {
+      if (marker != null) marker.setMap(null);
+      marker = null;
+    }
+
+    function geolocation() {
       if (navigator.geolocation) {
         // 現在地を取得
         navigator.geolocation.getCurrentPosition(
           // 取得成功した場合
-          function(position) {
+          function (position) {
             // 緯度・経度を変数に格納
             var mapLatLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-            // マップオプションを変数に格納
-            var mapOptions = {
-              zoom : 15,          // 拡大倍率
-              center : mapLatLng  // 緯度・経度
-            };
-            // マップオブジェクト作成
-            var map = new google.maps.Map(
-              document.getElementById("map"), // マップを表示する要素
-              mapOptions         // マップオプション
-            );
-            //　マップにマーカーを表示する
-            var marker = new google.maps.Marker({
-              map : map,             // 対象の地図オブジェクト
-              position : mapLatLng   // 緯度・経度
+            console.log(position.coords.latitude)
+            console.log(position.coords.longitude)
+
+            deleteMarker()
+            map.setCenter(mapLatLng)
+
+            marker = new google.maps.Marker({
+              map: map,
+              position: mapLatLng
             });
           },
           // 取得失敗した場合
-          function(error) {
+          function (error) {
             // エラーメッセージを表示
-            switch(error.code) {
+            switch (error.code) {
               case 1: // PERMISSION_DENIED
                 alert("位置情報の利用が許可されていません");
                 break;
@@ -49,17 +82,40 @@
                 alert("タイムアウトになりました");
                 break;
               default:
-                alert("その他のエラー(エラーコード:"+error.code+")");
+                alert("その他のエラー(エラーコード:" + error.code + ")");
                 break;
             }
           }
         );
-      // Geolocation APIに対応していない
       } else {
         alert("この端末では位置情報が取得できません");
       }
     }
+
+    function codeAddress() {
+      let inputAddress = document.getElementById('address').value;
+
+      geocoder.geocode({
+          'address': inputAddress
+        },
+        function (results, status) {
+          if (status == 'OK') {
+          deleteMarker()
+          // marker.setMap(null);
+          var mapLocation = results[0].geometry.location
+          map.setCenter(mapLocation);
+
+          marker = new google.maps.Marker({
+            map: map,
+            position: mapLocation
+          });
+        } else {
+          alert('Geocode was not successful for the following reason: ' + status);
+        }
+      });
+    }
   </script>
   <script src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['API_KEY'] %>&callback=initMap"></script>
-  </body>
+</body>
+
 </html>

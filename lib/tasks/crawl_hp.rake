@@ -224,9 +224,6 @@ namespace :crawl_hp do
         shop.shop_lat = p response["results"][0]["geometry"]["location"]["lat"]
         shop.shop_lon = p response["results"][0]["geometry"]["location"]["lng"]
         shop.save!
-        shop = Shop.first
-        puts shop.shop_lon
-        puts shop.shop_lat
       else
         scrape_log = Logger.new("log/scrape.log", 2, 10 * 1024)
         scrape_log.error("Not Found #{shop.shop_name} : #{shop.shop_address}")

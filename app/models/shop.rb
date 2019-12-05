@@ -16,4 +16,6 @@ class Shop < ApplicationRecord
   #   self.shop_lat = response["results"][0]["geometry"]["location"]["lat"]
   #   self.shop_lon = response["results"][0]["geometry"]["location"]["lng"]
   # end
+
+  def 
 end
