@@ -10,12 +10,18 @@
 </head>
 
 <body>
-  <input type="submit" value='現在地' onclick='geolocation()'>
-  <form name="geocede" id="geoform">
-    <input id="address" type="textbox" value="池袋">
-    <input type="submit" value="検索" onclick="codeAddress()">
-  </form>
-  <div id="map"></div>
+  <header>
+    <nav class="navbar fixed-top justify-content-around navbar-dark mx-auto">
+      <button class="btn btn-outline-success my-2 my-sm-0" onclick='geolocation()'>現在地</button>
+        <div class="form-inline" name='geocode'>
+          <input class="form-control mr-sm-2" type="textbox" id="address" placeholder="この地点を検索">
+          <input type="button" id="geobutton" class="btn btn-outline-success my-2 my-sm-0" value="Search" onclick="codeAddress()">
+        </div>
+    </nav>
+  </header>
+  <main>
+    <div id="map"></div>
+  </main>
   <script>
     var map
     var geocoder
@@ -37,11 +43,6 @@
         document.getElementById('map'),
         mapOptions
       );
-
-      var box = document.getElementById('geoform')
-      box.index = 1;
-      map.controls[google.maps.ControlPosition.TOP_CENTER].push(box);
-
     }
 
     function deleteMarker() {
@@ -94,28 +95,35 @@
 
     function codeAddress() {
       let inputAddress = document.getElementById('address').value;
-
+      console.log('yobareta')
       geocoder.geocode({
           'address': inputAddress
         },
         function (results, status) {
           if (status == 'OK') {
-          deleteMarker()
-          // marker.setMap(null);
-          var mapLocation = results[0].geometry.location
-          map.setCenter(mapLocation);
-
-          marker = new google.maps.Marker({
-            map: map,
-            position: mapLocation
-          });
-        } else {
-          alert('Geocode was not successful for the following reason: ' + status);
-        }
-      });
+            deleteMarker()
+            // marker.setMap(null);
+            var mapLocation = results[0].geometry.location
+            map.setCenter(mapLocation);
+            console.log(mapLocation)
+            marker = new google.maps.Marker({
+              map: map,
+              position: mapLocation
+            });
+          } else {
+            alert('Geocode was not successful for the following reason: ' + status);
+          }
+        });
     }
+
+    $("#address").keypress(function(e){
+    if(e.which == 13){
+    $("#geobutton").click();
+    }
+    });
+
   </script>
   <script src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['API_KEY'] %>&callback=initMap"></script>
 </body>
 
-</html>
+</html>z``

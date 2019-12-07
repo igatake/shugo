@@ -1,5 +1,4 @@
 namespace :crawl_hp do
-
   desc "DrinkGenre作成"
   task :make_models_of_drink_genre => :environment do
     def make_model(model_name)
@@ -8,17 +7,17 @@ namespace :crawl_hp do
       log.info("made model #{model_name}")
     end
 
-    make_model('その他')
-    make_model('生ビール')
-    make_model('瓶ビール')
-    make_model('スーパードライ(アサヒ系)')
-    make_model('一番搾り(キリン系)')
-    make_model('黒ラベル(サッポロ系)')
-    make_model('プレミアムモルツ(サントリー系)')
-    make_model('ヱビス')
+    make_model("その他")
+    make_model("生ビール")
+    make_model("瓶ビール")
+    make_model("スーパードライ(アサヒ系)")
+    make_model("一番搾り(キリン系)")
+    make_model("黒ラベル(サッポロ系)")
+    make_model("プレミアムモルツ(サントリー系)")
+    make_model("ヱビス")
 
     log = Logger.new(STDOUT)
-    log.info('complete')
+    log.info("complete")
   end
 
   desc "スクレイピング"
@@ -145,7 +144,8 @@ namespace :crawl_hp do
 
     def genre_save(drink, shop_id, genre_id)
       genre = DrinkGenre.find(genre_id)
-      drink.drink_genre = genre
+      puts drink.drink_name
+      drink.drink_genre = p genre
       drink.save!
       shop = Shop.find(shop_id)
       shop_gen = shop.drink_genres.ids
@@ -173,40 +173,45 @@ namespace :crawl_hp do
 
     drinks = Drink.all
     drinks.each do |drink|
-      kirin = similarity(drink.drink_name, "キリン一番搾り")
-      asahi = similarity(drink.drink_name, "アサヒスーパードライ")
-      puremoru = similarity(drink.drink_name, "ザ・プレミアム・モルツ")
-      sapporo = similarity(drink.drink_name, "サッポロ黒ラベル")
-      ebisu = similarity(drink.drink_name, "ヱビスビール")
+      if (/ビール|アサヒ|キリン|サッポロ|ヱビスビール|エビス|モルツ/ =~ drink.drink_name) &&
+         (/金麦|ノンアルコール|ベース|ゼロ|フリー|零|甘太郎|クリア|ホップ|シャンディ|トマト|レッド|カシス|オレンジ|カンパリ/ !~ drink.drink_name)
+        kirin = similarity(drink.drink_name, "キリン一番搾り")
+        asahi = similarity(drink.drink_name, "アサヒスーパードライ")
+        puremoru = similarity(drink.drink_name, "ザ・プレミアム・モルツ")
+        sapporo = similarity(drink.drink_name, "サッポロ黒ラベル")
+        ebisu = similarity(drink.drink_name, "ヱビスビール")
 
-      drink_array = [kirin, asahi, puremoru, sapporo, ebisu]
+        drink_array = [kirin, asahi, puremoru, sapporo, ebisu]
 
-      drink_array.sort!.reverse!
+        drink_array.sort!.reverse!
 
-      if drink.drink_name.include?("瓶ビール")
-        genre_save(drink, drink.shop_id, 3)
-      elsif drink_array[0] <= 0.15
-        if drink.drink_name.include?("生ビール")
+        if drink.drink_name.include?("瓶ビール")
+          genre_save(drink, drink.shop_id, 3)
+        elsif drink_array[0] <= 0.15
+          if drink.drink_name.include?("生ビール")
+            finer_check(drink)
+          else
+            genre_save(drink, drink.shop_id, 1)
+          end
+        elsif drink_array[0] == asahi
+          if drink.drink_name.include?("アサヒ") || drink.drink_name.include?("スーパードライ")
+            genre_save(drink, drink.shop_id, 4)
+          else
+            genre_save(drink, drink.shop_id, 1)
+          end
+        elsif drink_array[0] == kirin
+          genre_save(drink, drink.shop_id, 5)
+        elsif drink_array[0] == sapporo
+          genre_save(drink, drink.shop_id, 6)
+        elsif drink_array[0] == puremoru
+          genre_save(drink, drink.shop_id, 7)
+        elsif drink.drink_name.include?("ヱビス") || drink.drink_name.include?("エビス")
+          genre_save(drink, drink.shop_id, 8)
+        elsif drink.drink_name.include?("生ビール")
           finer_check(drink)
         else
           genre_save(drink, drink.shop_id, 1)
         end
-      elsif drink_array[0] == asahi
-        if drink.drink_name.include?("アサヒ") || drink.drink_name.include?("スーパードライ")
-          genre_save(drink, drink.shop_id, 4)
-        else
-          genre_save(drink, drink.shop_id, 1)
-        end
-      elsif drink_array[0] == kirin
-        genre_save(drink, drink.shop_id, 5)
-      elsif drink_array[0] == sapporo
-        genre_save(drink, drink.shop_id, 6)
-      elsif drink_array[0] == puremoru
-        genre_save(drink, drink.shop_id, 7)
-      elsif drink.drink_name.include?("ヱビス") || drink.drink_name.include?("エビス")
-        genre_save(drink, drink.shop_id, 8)
-      elsif drink.drink_name.include?("生ビール")
-        finer_check(drink)
       else
         genre_save(drink, drink.shop_id, 1)
       end

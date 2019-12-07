@@ -1,33 +1,27 @@
-function initMap() {
-  // Geolocation APIに対応している
+function geolocation() {
   if (navigator.geolocation) {
     // 現在地を取得
     navigator.geolocation.getCurrentPosition(
       // 取得成功した場合
-      function (position) {
+      function(position) {
         // 緯度・経度を変数に格納
-        var mapLatLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-        console.log(position.coords.latitude)
-        console.log(position.coords.longitude)
-        // マップオプションを変数に格納
-        var mapOptions = {
-          disableDefaultUI: true,
-          zoom: 17,          // 拡大倍率
-          center: mapLatLng  // 緯度・経度
-        };
-        // マップオブジェクト作成
-        var map = new google.maps.Map(
-          document.getElementById("map"), // マップを表示する要素
-          mapOptions         // マップオプション
+        var mapLatLng = new google.maps.LatLng(
+          position.coords.latitude,
+          position.coords.longitude
         );
-        //　マップにマーカーを表示する
-        var marker = new google.maps.Marker({
-          map: map,             // 対象の地図オブジェクト
-          position: mapLatLng   // 緯度・経度
+        console.log(position.coords.latitude);
+        console.log(position.coords.longitude);
+
+        deleteMarker();
+        map.setCenter(mapLatLng);
+
+        marker = new google.maps.Marker({
+          map: map,
+          position: mapLatLng
         });
       },
       // 取得失敗した場合
-      function (error) {
+      function(error) {
         // エラーメッセージを表示
         switch (error.code) {
           case 1: // PERMISSION_DENIED
@@ -45,7 +39,6 @@ function initMap() {
         }
       }
     );
-    // Geolocation APIに対応していない
   } else {
     alert("この端末では位置情報が取得できません");
   }
