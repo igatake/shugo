@@ -12,10 +12,10 @@
 <body>
   <header>
     <nav class="navbar fixed-top justify-content-around navbar-dark mx-auto">
-      <button class="btn btn-outline-success my-2 my-sm-0" onclick='geolocation()'>現在地</button>
+      <button class="hd_btn my-2 my-sm-0" onclick='geolocation()'>現在地</button>
         <div class="form-inline" name='geocode'>
-          <input class="form-control mr-sm-2" type="textbox" id="address" placeholder="この地点を検索">
-          <input type="button" id="geobutton" class="btn btn-outline-success my-2 my-sm-0" value="Search" onclick="codeAddress()">
+          <input class="mr-sm-2 bg-light" type="textbox" id="address" placeholder="この地点を検索">
+          <input type="button" id="geobutton" class="hd_btn my-2 my-sm-0" value="Search" onclick="codeAddress()">
         </div>
     </nav>
   </header>
@@ -125,5 +125,4 @@
   </script>
   <script src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['API_KEY'] %>&callback=initMap"></script>
 </body>
-
-</html>z``
+</html>
