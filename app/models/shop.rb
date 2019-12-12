@@ -11,15 +11,6 @@ class Shop < ApplicationRecord
     puts shop.shop_name
   end
 
-  def self.get
-    shops = Shop.get_distance(35.689407, 139.700306, 20)
-    shops.each do |shop|
-      puts shop.id
-      puts shop.shop_name
-      puts shop.distance
-    end
-  end
-
   def self.get_distance(lat_now, lng_now, show_num, genre_id = nil)
     unless genre_id == nil
       query = <<-SQL
