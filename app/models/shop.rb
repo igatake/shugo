@@ -11,40 +11,58 @@ class Shop < ApplicationRecord
     puts shop.shop_name
   end
 
-  def self.get_distance(lat_now, lon_now)
-    shops = Shop.all
-    distances = {}
+  def self.get
+    shops = Shop.get_distance(35.689407, 139.700306, 20)
     shops.each do |shop|
-      # ラジアン単位に変換
-      x1 = lat_now.to_f * Math::PI / 180
-      y1 = lon_now.to_f * Math::PI / 180
-      x2 = shop.shop_lat.to_f * Math::PI / 180
-      y2 = shop.shop_lon.to_f * Math::PI / 180
-
-      # 地球の半径 (km)
-      radius = 6378.137
-
-      # 差の絶対値
-      diff_y = (y1 - y2).abs
-
-      calc1 = Math.cos(x2) * Math.sin(diff_y)
-      calc2 = Math.cos(x1) * Math.sin(x2) - Math.sin(x1) * Math.cos(x2) * Math.cos(diff_y)
-
-      # 分子
-      numerator = Math.sqrt(calc1 ** 2 + calc2 ** 2)
-
-      # 分母
-      denominator = Math.sin(x1) * Math.sin(x2) + Math.cos(x1) * Math.cos(x2) * Math.cos(diff_y)
-
-      # 弧度
-      degree = Math.atan2(numerator, denominator)
-
-      # 大円距離 (km)
-      distance = degree * radius
-
-      distances[distance] = shop.shop_url
+      puts shop.id
+      puts shop.shop_name
+      puts shop.distance
     end
-    near_distances = distances.sort
-    puts near_distances
+  end
+
+  def self.get_distance(lat_now, lng_now, show_num, genre_id = nil)
+    unless genre_id == nil
+      query = <<-SQL
+      SELECT
+        id, shop_name, shop_url,
+        (
+          6371 * acos(
+            cos(radians(:lat_now))
+            * cos(radians(shop_lat))
+            * cos(radians(shop_lng) - radians(:lng_now))
+            + sin(radians(:lat_now))
+            * sin(radians(shop_lat))
+          )
+        ) AS distance
+      FROM
+        (SELECT `shops`.* FROM `shops` INNER JOIN `shop_drinks` ON `shops`.`id` = `shop_drinks`.`shop_id` WHERE `shop_drinks`.`drink_genre_id` = :genre_id) AS drink_genre
+      ORDER BY
+        distance
+      LIMIT :show_num
+      ;
+      SQL
+      find_by_sql([query, { genre_id: genre_id, lat_now: lat_now, lng_now: lng_now, show_num: show_num }])
+    else
+      query = <<-SQL
+      SELECT
+        id, shop_name, shop_url,
+        (
+          6371 * acos(
+            cos(radians(:lat_now))
+            * cos(radians(shop_lat))
+            * cos(radians(shop_lng) - radians(:lng_now))
+            + sin(radians(:lat_now))
+            * sin(radians(shop_lat))
+          )
+        ) AS distance
+      FROM
+          shops
+      ORDER BY
+        distance
+      LIMIT :show_num
+      ;
+      SQL
+      find_by_sql([query, {lat_now: lat_now, lng_now: lng_now, show_num: show_num }])
+    end
   end
 end

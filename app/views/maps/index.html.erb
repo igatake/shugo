@@ -61,6 +61,15 @@
             console.log(position.coords.latitude)
             console.log(position.coords.longitude)
 
+            const obj = {hello: "world"};
+            const method = "POST";
+            const body = JSON.stringify(obj);
+            const headers = {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+            };
+            fetch("/fetch_test", {method, headers, body}).then((res)=> res.json()).then(console.log).catch(console.error);
+
             deleteMarker()
             map.setCenter(mapLatLng)
 

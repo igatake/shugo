@@ -219,30 +219,33 @@ namespace :crawl_hp do
   end
 
   desc "geocode"
-  task :add_lat_and_lon => :environment do
+  task :add_lat_and_lng => :environment do
     def geocode(shop)
       uri = URI.escape("https://maps.googleapis.com/maps/api/geocode/json?address=" + shop.shop_address + "&key=#{ENV["API_KEY"]}")
       res = HTTP.get(uri).to_s
       response = JSON.parse(res)
       check = response["status"]
       if check == "OK"
-        shop.shop_lat = p response["results"][0]["geometry"]["location"]["lat"]
-        shop.shop_lon = p response["results"][0]["geometry"]["location"]["lng"]
+        shop.shop_lat = response["results"][0]["geometry"]["location"]["lat"]
+        shop.shop_lng = response["results"][0]["geometry"]["location"]["lng"]
         shop.save!
+        puts shop.shop_lat
+        puts shop.shop_lng
       else
         scrape_log = Logger.new("log/scrape.log", 2, 10 * 1024)
         scrape_log.error("Not Found #{shop.shop_name} : #{shop.shop_address}")
       end
     end
 
-    shops = Shop.where(shop_lon: nil)
+    shops = Shop.where(shop_lng: nil)
+    puts shops.count
     shops.each do |shop|
-      geocode(shop) unless shop.shop_lon?
+      geocode(shop) unless shop.shop_lng?
     end
   end
 
   desc "scraping sequence"
-  task scraping_sequence: [:crawring_hp, :drink_classification, :add_lat_and_lon] do
+  task scraping_sequence: [:crawring_hp, :drink_classification, :add_lat_and_lng] do
     scrape_log = Logger.new("log/scrape.log", 2, 10 * 1024)
     scrape_log.info("Complete crawling")
   end
