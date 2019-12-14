@@ -13,10 +13,11 @@
   <header>
     <nav class="navbar fixed-top justify-content-around navbar-dark mx-auto">
       <button class="hd_btn my-2 my-sm-0" onclick='geolocation()'>現在地</button>
-        <div class="form-inline" name='geocode'>
-          <input class="mr-sm-2 bg-light" type="textbox" id="address" placeholder="この地点を検索">
-          <input type="button" id="geobutton" class="hd_btn my-2 my-sm-0" value="Search" onclick="codeAddress()">
-        </div>
+      <button class="hd_btn my-2 my-sm-0" onclick='fetchApi()'>テスト</button>
+      <div class="form-inline" name='geocode'>
+        <input class="mr-sm-2 bg-light" type="textbox" id="address" placeholder="この地点を検索">
+        <input type="button" id="geobutton" class="hd_btn my-2 my-sm-0" value="Search" onclick="codeAddress()">
+      </div>
     </nav>
   </header>
   <main>
@@ -45,6 +46,27 @@
       );
     }
 
+    function fetchApi(lat, lng) {
+      var prm = {
+        now_lat: lat,
+        now_lng: lng,
+      };
+
+      fetch('/fetch_test', {
+        method: "POST",
+        body: JSON.stringify(prm),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }).then(function (response) {
+        return response.json()
+      }).then(function (json) {
+        console.log('parsed json', json)
+      }).catch(function (ex) {
+        console.log('parsing failed', ex)
+      })
+    }
+
     function deleteMarker() {
       if (marker != null) marker.setMap(null);
       marker = null;
@@ -61,14 +83,7 @@
             console.log(position.coords.latitude)
             console.log(position.coords.longitude)
 
-            const obj = {hello: "world"};
-            const method = "POST";
-            const body = JSON.stringify(obj);
-            const headers = {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-            };
-            fetch("/fetch_test", {method, headers, body}).then((res)=> res.json()).then(console.log).catch(console.error);
+            fetchApi(position.coords.latitude, position.coords.longitude)
 
             deleteMarker()
             map.setCenter(mapLatLng)
@@ -125,13 +140,13 @@
         });
     }
 
-    $("#address").keypress(function(e){
-    if(e.which == 13){
-    $("#geobutton").click();
-    }
+    $("#address").keypress(function (e) {
+      if (e.which == 13) {
+        $("#geobutton").click();
+      }
     });
-
   </script>
   <script src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['API_KEY'] %>&callback=initMap"></script>
 </body>
+
 </html>
