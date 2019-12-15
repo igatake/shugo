@@ -8,10 +8,8 @@ class MapsController < ApplicationController
     log = Logger.new(STDOUT)
     log.info(@lat)
     log.info(@lng)
-    # params[:max_x], params[:min_y], params[:max_y])
-    render json: {
-      lat: @lat,
-      lng: @lng
-    }
+
+    @shops = Shop.get_distance(@lat, @lng1, 100)
+    render json: @shops
   end
 end

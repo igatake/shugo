@@ -221,26 +221,30 @@ namespace :crawl_hp do
   desc "geocode"
   task :add_lat_and_lng => :environment do
     def geocode(shop)
-      uri = URI.escape("https://maps.googleapis.com/maps/api/geocode/json?address=" + shop.shop_address + "&key=#{ENV["API_KEY"]}")
+      uri = URI.escape("https://maps.googleapis.com/maps/api/geocode/json?language=ja&address=" + shop.shop_address + "&key=#{ENV["API_KEY"]}")
       res = HTTP.get(uri).to_s
       response = JSON.parse(res)
       check = response["status"]
       if check == "OK"
         shop.shop_lat = response["results"][0]["geometry"]["location"]["lat"]
         shop.shop_lng = response["results"][0]["geometry"]["location"]["lng"]
+        shop.shop_address = response["results"][0]["formatted_address"].gsub(/日本、/, '').gsub(/\A日本 /, '').gsub(/ 日本\z/, '').gsub(/〒\d{3}-\d{4} /, '').gsub(/\d{3}-\d{4}/, '').gsub(/\A\s*/, '').gsub(/\s*\z/, '')
         shop.save!
         puts shop.shop_lat
         puts shop.shop_lng
+        puts shop.shop_address
       else
         scrape_log = Logger.new("log/scrape.log", 2, 10 * 1024)
         scrape_log.error("Not Found #{shop.shop_name} : #{shop.shop_address}")
       end
     end
 
-    shops = Shop.where(shop_lng: nil)
-    puts shops.count
+    # shops = Shop.where(shop_lng: nil)
+    shops = Shop.all
+    # puts shops.count
     shops.each do |shop|
-      geocode(shop) unless shop.shop_lng?
+      # geocode(shop) unless shop.shop_lng?
+      geocode(shop)
     end
   end
 
