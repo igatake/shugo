@@ -11,17 +11,17 @@ class Shop < ApplicationRecord
     puts shop.shop_name
   end
 
-  def self.get_shops(lat_now, lng_now, show_num, genre_id = 2)
-    shops = Shop.get_distance(lat_now, lng_now, show_num, genre_id)
+  def self.get_shops(lat_now, lng_now, show_num, genre_array = [2])
+    shops = Shop.get_distance(lat_now, lng_now, show_num, genre_array)
     shops.as_json
     new_shops = []
     shops.each do |shop|
       drinks = {}
       shop.drinks.each do |drink|
-        if genre_id == 2
+        if genre_array.include?(2)
           drinks[drink.drink_name] = drink.drink_price if drink.drink_genre.parent_id == 2 || drink.drink_genre.id == 2
         else
-          drinks[drink.drink_name] = drink.drink_price if drink.drink_genre.id == genre_id
+          drinks[drink.drink_name] = drink.drink_price if genre_array.include?(drink.drink_genre.id)
         end
       end
       shop_json = shop.as_json
@@ -29,14 +29,22 @@ class Shop < ApplicationRecord
       shop_json['drink'] = drinks
       new_shops.push(shop_json)
     end
-    shops_json = new_shops.as_json
+    new_shops.as_json
   end
 
-  def self.get_distance(lat_now, lng_now, show_num, genre_id)
-    if genre_id == 2
+  def self.get_distance(lat_now, lng_now, show_num, genre_array)
+    if genre_array.include?(2)
       option = '(SELECT `shops`.* FROM `shops` INNER JOIN `shop_drinks` ON `shops`.`id` = `shop_drinks`.`shop_id` WHERE `shop_drinks`.`drink_genre_id` = 2 OR `drink_genre_id` = 3 OR `drink_genre_id` = 4 OR `drink_genre_id` = 5 OR `drink_genre_id` = 6 OR `drink_genre_id` = 7 OR `drink_genre_id` = 8 ) AS drink_genre'
     else
-      option = "(SELECT `shops`.* FROM `shops` INNER JOIN `shop_drinks` ON `shops`.`id` = `shop_drinks`.`shop_id` WHERE `shop_drinks`.`drink_genre_id` = #{genre_id} ) AS drink_genre"
+      options = ''
+      genre_array.each_with_index do |genre, index|
+        options << if index == genre_array.size - 1
+                     "`drink_genre_id` = #{genre}"
+                   else
+                     "`drink_genre_id` = #{genre} OR "
+                   end
+      end
+      option = "(SELECT `shops`.* FROM `shops` INNER JOIN `shop_drinks` ON `shops`.`id` = `shop_drinks`.`shop_id` WHERE `shop_drinks`.#{options} ) AS drink_genre"
     end
     query = <<-SQL
     SELECT DISTINCT
@@ -57,6 +65,6 @@ class Shop < ApplicationRecord
     LIMIT :show_num
     ;
     SQL
-    find_by_sql([query, { lat_now: lat_now, lng_now: lng_now, show_num: show_num}])
+    find_by_sql([query, { lat_now: lat_now, lng_now: lng_now, show_num: show_num }])
   end
 end

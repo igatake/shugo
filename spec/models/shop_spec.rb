@@ -15,6 +15,6 @@ RSpec.describe Shop, type: :model do
   end
 
   describe '#get_distance_with_genre_id_3' do
-    puts Shop.get_shops(35.689407, 139.700306, 20, 3)
+    puts Shop.get_shops(35.689407, 139.700306, 20, [4, 6, 8])
   end
 end
