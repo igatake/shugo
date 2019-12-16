@@ -34,63 +34,29 @@ class Shop < ApplicationRecord
 
   def self.get_distance(lat_now, lng_now, show_num, genre_id)
     if genre_id == 2
-      query = <<-SQL
-      SELECT DISTINCT
-        id, shop_name, shop_address, shop_url, shop_lat, shop_lng,
-        (
-          6371 * acos(
-            cos(radians(:lat_now))
-            * cos(radians(shop_lat))
-            * cos(radians(shop_lng) - radians(:lng_now))
-            + sin(radians(:lat_now))
-            * sin(radians(shop_lat))
-          )
-        ) AS distance
-      FROM
-        (SELECT `shops`.*
-          FROM `shops`
-          INNER JOIN `shop_drinks`
-          ON `shops`.`id` = `shop_drinks`.`shop_id`
-          WHERE `shop_drinks`.`drink_genre_id` = 2 OR
-                              `drink_genre_id` = 3 OR
-                              `drink_genre_id` = 4 OR
-                              `drink_genre_id` = 5 OR
-                              `drink_genre_id` = 6 OR
-                              `drink_genre_id` = 7 OR
-                              `drink_genre_id` = 8
-          ) AS drink_genre
-      ORDER BY
-        distance
-      LIMIT :show_num
-      ;
-      SQL
-      find_by_sql([query, { lat_now: lat_now, lng_now: lng_now, show_num: show_num }])
+      option = '(SELECT `shops`.* FROM `shops` INNER JOIN `shop_drinks` ON `shops`.`id` = `shop_drinks`.`shop_id` WHERE `shop_drinks`.`drink_genre_id` = 2 OR `drink_genre_id` = 3 OR `drink_genre_id` = 4 OR `drink_genre_id` = 5 OR `drink_genre_id` = 6 OR `drink_genre_id` = 7 OR `drink_genre_id` = 8 ) AS drink_genre'
     else
-      query = <<-SQL
-      SELECT
-        *,
-        (
-          6371 * acos(
-            cos(radians(:lat_now))
-            * cos(radians(shop_lat))
-            * cos(radians(shop_lng) - radians(:lng_now))
-            + sin(radians(:lat_now))
-            * sin(radians(shop_lat))
-          )
-        ) AS distance
-      FROM
-        (SELECT `shops`.*
-          FROM `shops`
-          INNER JOIN `shop_drinks`
-          ON `shops`.`id` = `shop_drinks`.`shop_id`
-          WHERE `shop_drinks`.`drink_genre_id` = :genre_id
-          ) AS drink_genre
-      ORDER BY
-        distance
-      LIMIT :show_num
-      ;
-      SQL
-      find_by_sql([query, { genre_id: genre_id, lat_now: lat_now, lng_now: lng_now, show_num: show_num }])
+      option = "(SELECT `shops`.* FROM `shops` INNER JOIN `shop_drinks` ON `shops`.`id` = `shop_drinks`.`shop_id` WHERE `shop_drinks`.`drink_genre_id` = #{genre_id} ) AS drink_genre"
     end
+    query = <<-SQL
+    SELECT DISTINCT
+      id, shop_name, shop_address, shop_url, shop_lat, shop_lng,
+      (
+        6371 * acos(
+          cos(radians(:lat_now))
+          * cos(radians(shop_lat))
+          * cos(radians(shop_lng) - radians(:lng_now))
+          + sin(radians(:lat_now))
+          * sin(radians(shop_lat))
+        )
+      ) AS distance
+    FROM
+      #{option}
+    ORDER BY
+      distance
+    LIMIT :show_num
+    ;
+    SQL
+    find_by_sql([query, { lat_now: lat_now, lng_now: lng_now, show_num: show_num}])
   end
 end

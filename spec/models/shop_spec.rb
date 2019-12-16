@@ -14,18 +14,7 @@ RSpec.describe Shop, type: :model do
     puts Shop.get_shops(35.689407, 139.700306, 20)
   end
 
-  # describe '#get_distance_with_genre_id' do
-  #   shops = Shop.get_distance(35.689407, 139.700306, 20, 3)
-  #   new_shops = []
-  #   shops.each do |shop|
-  #     drinks = {}
-  #     shop.drinks.each do |drink|
-  #       drinks[drink.drink_name] = drink.drink_price if drink.drink_genre.id == 3
-  #     end
-  #     shop_json = shop.as_json
-  #     shop_json['drink'] = drinks
-  #     new_shops.push(shop_json)
-  #   end
-  #   puts new_shops.as_json
-  # end
+  describe '#get_distance_with_genre_id_3' do
+    puts Shop.get_shops(35.689407, 139.700306, 20, 3)
+  end
 end
