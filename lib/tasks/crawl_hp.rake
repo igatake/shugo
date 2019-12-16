@@ -239,12 +239,10 @@ namespace :crawl_hp do
       end
     end
 
-    # shops = Shop.where(shop_lng: nil)
-    shops = Shop.all
-    # puts shops.count
+    shops = Shop.where(shop_lng: nil)
+    puts shops.count
     shops.each do |shop|
-      # geocode(shop) unless shop.shop_lng?
-      geocode(shop)
+      geocode(shop) unless shop.shop_lng?
     end
   end
 

@@ -11,11 +11,32 @@ class Shop < ApplicationRecord
     puts shop.shop_name
   end
 
-  def self.get_distance(lat_now, lng_now, show_num, genre_id = 2)
+  def self.get_shops(lat_now, lng_now, show_num, genre_id = 2)
+    shops = Shop.get_distance(lat_now, lng_now, show_num, genre_id)
+    shops.as_json
+    new_shops = []
+    shops.each do |shop|
+      drinks = {}
+      shop.drinks.each do |drink|
+        if genre_id == 2
+          drinks[drink.drink_name] = drink.drink_price if drink.drink_genre.parent_id == 2 || drink.drink_genre.id == 2
+        else
+          drinks[drink.drink_name] = drink.drink_price if drink.drink_genre.id == genre_id
+        end
+      end
+      shop_json = shop.as_json
+      # puts shop_json
+      shop_json['drink'] = drinks
+      new_shops.push(shop_json)
+    end
+    shops_json = new_shops.as_json
+  end
+
+  def self.get_distance(lat_now, lng_now, show_num, genre_id)
     if genre_id == 2
       query = <<-SQL
-      SELECT
-        *,
+      SELECT DISTINCT
+        id, shop_name, shop_address, shop_url, shop_lat, shop_lng,
         (
           6371 * acos(
             cos(radians(:lat_now))
