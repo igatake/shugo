@@ -9,7 +9,8 @@ class MapsController < ApplicationController
     log.info(@lat)
     log.info(@lng)
 
-    @shops = Shop.get_distance(@lat, @lng1, 100)
+    @shops = Shop.get_shops(@lat, @lng, 20)
     render json: @shops
   end
 end
+

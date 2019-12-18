@@ -27,6 +27,7 @@
     var map
     var geocoder
     var marker = null;
+    var markerData
 
     function initMap() {
       geocoder = new google.maps.Geocoder()
@@ -46,10 +47,12 @@
       );
     }
 
-    function fetchApi(lat, lng) {
+    function fetchApi(lat, lng, shop_num = 20, genre_array) {
       var prm = {
         now_lat: lat,
         now_lng: lng,
+        shop_num: shop_num,
+        genre_array: genre_array
       };
 
       fetch('/fetch_test', {
@@ -60,11 +63,41 @@
         }
       }).then(function (response) {
         return response.json()
-      }).then(function (json) {
-        console.log('parsed json', json)
+      }).then(function (shops) {
+        markerData = shops
+        dropMarker(markerData)
+        console.log(markerData[1].shop_lat)
+        console.log(shops)
+        // console.log('parsed json', shops)
+        // console.log(shops[0].distance)
+        // console.log(Object.keys(shops).length)
       }).catch(function (ex) {
         console.log('parsing failed', ex)
       })
+    }
+
+    function dropMarker(markerData) {
+      console.log('otosimasu')
+      for (var i = 0; i < Object.keys(markerData); i++) {
+        markerLatLng = new google.maps.LatLng({lat: markerData[i].shop_lat, lng: markerData[i].shop_lng});
+        console.log(markerData[1].shop_lat)
+        console.log(i)
+        marker[i] = new google.maps.Marker({
+          position: markerLatLng,
+          map: map
+        });
+        infoWindow[i] = new google.maps.InfoWindow({
+          content: '<div class="map">' + markerData[i].shop_name + '</div>'
+        });
+        markerEvent(i);
+      }
+      console.log('otosita')
+    }
+
+    function markerEvent(i) {
+      marker[i].addListener('click', function() {
+        infoWindow[i].open(map, marker[i]);
+      });
     }
 
     function deleteMarker() {
@@ -82,11 +115,11 @@
             var mapLatLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
             console.log(position.coords.latitude)
             console.log(position.coords.longitude)
+            map.setCenter(mapLatLng)
+            deleteMarker()
 
             fetchApi(position.coords.latitude, position.coords.longitude)
 
-            deleteMarker()
-            map.setCenter(mapLatLng)
 
             marker = new google.maps.Marker({
               map: map,
@@ -119,7 +152,6 @@
 
     function codeAddress() {
       let inputAddress = document.getElementById('address').value;
-      console.log('yobareta')
       geocoder.geocode({
           'address': inputAddress
         },
@@ -129,11 +161,12 @@
             // marker.setMap(null);
             var mapLocation = results[0].geometry.location
             map.setCenter(mapLocation);
-            console.log(mapLocation)
-            marker = new google.maps.Marker({
-              map: map,
-              position: mapLocation
-            });
+            fetchApi(results[0].geometry.location.lat(), results[0].geometry.location.lng())
+
+            // marker = new google.maps.Marker({
+            //   map: map,
+            //   position: mapLocation
+            // });
           } else {
             alert('Geocode was not successful for the following reason: ' + status);
           }
