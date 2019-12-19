@@ -26,8 +26,10 @@
   <script>
     var map
     var geocoder
-    var marker = null;
+    var marker = []
+    var infoWindow = []
     var markerData
+    var markerNum = null
 
     function initMap() {
       geocoder = new google.maps.Geocoder()
@@ -66,8 +68,8 @@
       }).then(function (shops) {
         markerData = shops
         dropMarker(markerData)
-        console.log(markerData[1].shop_lat)
-        console.log(shops)
+        // console.log(markerData[1].shop_lat)
+        // console.log(shops)
         // console.log('parsed json', shops)
         // console.log(shops[0].distance)
         // console.log(Object.keys(shops).length)
@@ -77,19 +79,23 @@
     }
 
     function dropMarker(markerData) {
-      console.log('otosimasu')
-      for (var i = 0; i < Object.keys(markerData); i++) {
-        markerLatLng = new google.maps.LatLng({lat: markerData[i].shop_lat, lng: markerData[i].shop_lng});
-        console.log(markerData[1].shop_lat)
+      deleteMarker(markerNum)
+      for (var i = 0; i < Object.keys(markerData).length; i++) {
+        markerLatLng = new google.maps.LatLng({lat: parseFloat(markerData[i].shop_lat), lng:
+        parseFloat(markerData[i].shop_lng)});
+        console.log(markerData[i].shop_lat);
         console.log(i)
-        marker[i] = new google.maps.Marker({
-          position: markerLatLng,
-          map: map
+        // console.log(i)
+        marker[i] = new google.maps.Marker({ // マーカーの追加
+          position: markerLatLng, // マーカーを立てる位置を指定
+          map: map // マーカーを立てる地図を指定
         });
+        console.log(marker[i])
         infoWindow[i] = new google.maps.InfoWindow({
           content: '<div class="map">' + markerData[i].shop_name + '</div>'
         });
         markerEvent(i);
+        markerNum = i
       }
       console.log('otosita')
     }
@@ -100,9 +106,12 @@
       });
     }
 
-    function deleteMarker() {
-      if (marker != null) marker.setMap(null);
-      marker = null;
+    function deleteMarker(markerNum) {
+      if (markerNum != null)
+        for(var i = 0; i <= markerNum; i ++) {
+          marker[i].setMap(null);
+        }
+      marker = [];
     }
 
     function geolocation() {
@@ -116,7 +125,7 @@
             console.log(position.coords.latitude)
             console.log(position.coords.longitude)
             map.setCenter(mapLatLng)
-            deleteMarker()
+            // deleteMarker()
 
             fetchApi(position.coords.latitude, position.coords.longitude)
 
@@ -157,7 +166,7 @@
         },
         function (results, status) {
           if (status == 'OK') {
-            deleteMarker()
+            // deleteMarker()
             // marker.setMap(null);
             var mapLocation = results[0].geometry.location
             map.setCenter(mapLocation);
