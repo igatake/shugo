@@ -30,6 +30,7 @@
     var infoWindow = []
     var markerData
     var markerNum = null
+    var markerLocation = null
 
     function initMap() {
       geocoder = new google.maps.Geocoder()
@@ -68,29 +69,22 @@
       }).then(function (shops) {
         markerData = shops
         dropMarker(markerData)
-        // console.log(markerData[1].shop_lat)
-        // console.log(shops)
-        // console.log('parsed json', shops)
-        // console.log(shops[0].distance)
-        // console.log(Object.keys(shops).length)
       }).catch(function (ex) {
         console.log('parsing failed', ex)
       })
     }
 
     function dropMarker(markerData) {
-      deleteMarker(markerNum)
       for (var i = 0; i < Object.keys(markerData).length; i++) {
         markerLatLng = new google.maps.LatLng({lat: parseFloat(markerData[i].shop_lat), lng:
         parseFloat(markerData[i].shop_lng)});
-        console.log(markerData[i].shop_lat);
-        console.log(i)
-        // console.log(i)
+        Object.keys(markerData[i].drink).forEach(key => console.log('key:' + key + ' value:' +
+        markerData[i].drink[key]))
         marker[i] = new google.maps.Marker({ // マーカーの追加
           position: markerLatLng, // マーカーを立てる位置を指定
+          animation: google.maps.Animation.DROP,
           map: map // マーカーを立てる地図を指定
         });
-        console.log(marker[i])
         infoWindow[i] = new google.maps.InfoWindow({
           content: '<div class="map">' + markerData[i].shop_name + '</div>'
         });
@@ -106,12 +100,17 @@
       });
     }
 
-    function deleteMarker(markerNum) {
+    function deleteMarkers(markerNum) {
       if (markerNum != null)
         for(var i = 0; i <= markerNum; i ++) {
-          marker[i].setMap(null);
+          if (marker[i] != null) marker[i].setMap(null);
         }
       marker = [];
+    }
+
+    function deleteMarkerLocation() {
+    if (markerLocation != null) markerLocation.setMap(null);
+    markerLocation = null;
     }
 
     function geolocation() {
@@ -125,8 +124,8 @@
             console.log(position.coords.latitude)
             console.log(position.coords.longitude)
             map.setCenter(mapLatLng)
-            // deleteMarker()
-
+            deleteMarkerLocation()
+            deleteMarkers(markerNum)
             fetchApi(position.coords.latitude, position.coords.longitude)
 
 
@@ -166,16 +165,16 @@
         },
         function (results, status) {
           if (status == 'OK') {
-            // deleteMarker()
-            // marker.setMap(null);
+            deleteMarkerLocation()
+            deleteMarkers(markerNum)
             var mapLocation = results[0].geometry.location
             map.setCenter(mapLocation);
+            markerLocation = new google.maps.Marker({
+              map: map,
+              position: mapLocation
+            });
             fetchApi(results[0].geometry.location.lat(), results[0].geometry.location.lng())
 
-            // marker = new google.maps.Marker({
-            //   map: map,
-            //   position: mapLocation
-            // });
           } else {
             alert('Geocode was not successful for the following reason: ' + status);
           }

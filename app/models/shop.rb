@@ -6,11 +6,6 @@ class Shop < ApplicationRecord
   validates :shop_name, presence: true
   validates :shop_address, presence: true
 
-  def self.greet
-    shop = Shop.first
-    puts shop.shop_name
-  end
-
   def self.get_shops(lat_now, lng_now, show_num, genre_array = [2])
     shops = Shop.get_distance(lat_now, lng_now, show_num, genre_array)
     shops.as_json
@@ -25,8 +20,8 @@ class Shop < ApplicationRecord
         end
       end
       shop_json = shop.as_json
-      # puts shop_json
-      shop_json['drink'] = drinks
+      sorted_drinks = drinks.sort_by { |_, v| v }.to_h
+      shop_json['drink'] = sorted_drinks
       new_shops.push(shop_json)
     end
     new_shops.as_json
