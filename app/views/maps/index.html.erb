@@ -12,30 +12,38 @@
 <body>
   <header>
     <nav class="navbar fixed-top justify-content-around navbar-dark mx-auto">
-      <button class="hd_btn my-2 my-sm-0" onclick='geolocation()'>現在地</button>
-      <button class="hd_btn my-2 my-sm-0" onclick='fetchApi()'>テスト</button>
+      <button type="button" class="hd_btn my-1 my-sm-0" onclick='geolocation()'>現在地</button>
+      <button type="button" class="hd_btn my-1 my-sm-0" onclick='getCenter()'>この周辺</button>
       <div class="form-inline" name='geocode'>
         <input class="mr-sm-2 bg-light" type="textbox" id="address" placeholder="この地点を検索">
         <input type="button" id="geobutton" class="hd_btn my-2 my-sm-0" value="Search" onclick="codeAddress()">
       </div>
     </nav>
   </header>
+
   <main>
-    <div id="map"></div>
+    <div id="wrap">
+      <div id="map"></div>
+      <div id="menu"></div>
+    </div>
   </main>
   <script>
-    var map
-    var geocoder
-    var marker = []
-    var infoWindow = []
-    var markerData
-    var markerNum = null
-    var markerLocation = null
+    let map
+    let geocoder
+    let marker = []
+    let infoWindow = []
+    let markerData
+    let markerNum = null
+    let markerLocation = null
+    let mapOptions = {}
+    let list = []
+    let mapWindow = document.getElementById('map')
+    let menuSidebar = document.getElementById('menu')
 
     function initMap() {
       geocoder = new google.maps.Geocoder()
 
-      var mapOptions = {
+      mapOptions = {
         disableDefaultUI: true,
         zoom: 17, // 拡大倍率
         center: {
@@ -45,20 +53,29 @@
       };
 
       map = new google.maps.Map(
-        document.getElementById('map'),
+        mapWindow,
         mapOptions
       );
     }
 
+    function showMenu() {
+      if (window.matchMedia( "(max-width: 767px)").matches) {
+        mapWindow.style.height = '60%';
+      } else {
+        mapWindow.style.width = '70%'
+      }
+      menuSidebar.style.display = 'block';
+    }
+
     function fetchApi(lat, lng, shop_num = 20, genre_array) {
-      var prm = {
+      let prm = {
         now_lat: lat,
         now_lng: lng,
         shop_num: shop_num,
         genre_array: genre_array
       };
 
-      fetch('/fetch_test', {
+      fetch('/fetch_shops', {
         method: "POST",
         body: JSON.stringify(prm),
         headers: {
@@ -67,7 +84,9 @@
       }).then(function (response) {
         return response.json()
       }).then(function (shops) {
+        showMenu()
         markerData = shops
+        deleteMarkers(markerNum)
         dropMarker(markerData)
       }).catch(function (ex) {
         console.log('parsing failed', ex)
@@ -75,42 +94,93 @@
     }
 
     function dropMarker(markerData) {
-      for (var i = 0; i < Object.keys(markerData).length; i++) {
-        markerLatLng = new google.maps.LatLng({lat: parseFloat(markerData[i].shop_lat), lng:
-        parseFloat(markerData[i].shop_lng)});
-        Object.keys(markerData[i].drink).forEach(key => console.log('key:' + key + ' value:' +
-        markerData[i].drink[key]))
+      if (document.getElementsByClassName('shop_list').length > 0) {
+        console.log(menuSidebar)
+        while (menuSidebar.firstChild) menuSidebar.removeChild(menuSidebar.firstChild);
+      }
+      for (let i = 0; i < Object.keys(markerData).length; i++) {
+        markerLatLng = new google.maps.LatLng({
+          lat: parseFloat(markerData[i].shop_lat),
+          lng: parseFloat(markerData[i].shop_lng)
+        });
+        let shopDom = ''
+        let drinkDom = ''
+        let distanceDom = ''
+        let addressDom = ''
+        let listDom = ''
+
+        shopDom = `<div><a href="https://www.hotpepper.jp${markerData[i].shop_url}" target="_blank"> ${markerData[i].shop_name} </a></div>`
+
+        for (let [key, value] of Object.entries(markerData[i].drink)) {
+          drinkDom = drinkDom + `<div><a href="https://www.hotpepper.jp${markerData[i].shop_url}drink/"
+              target="_blank"> ${key}: ${value}円 </a></div>`
+        }
+
+        if (markerData[i].distance < 1) {
+          let distanceForMetre = markerData[i].distance * 100
+          distanceForMetre = Math.round(distanceForMetre) * 10
+          distanceDom = `<div><a href="http://maps.apple.com/?q=${markerData[i].shop_lat},${markerData[i].shop_lng}">
+              ${distanceForMetre}m </a></div>`
+        } else {
+          let distanceForKilo = Math.round(distanceForKilo) / 100
+          distanceDom = `<div><a href="http://maps.apple.com/?q=${markerData[i].shop_lat},${markerData[i].shop_lng}">
+              ${distanceForKilo}km </a></div>`
+        }
+        listDom = `<div id="list${i}" class='shop_container'><li class=' shop_list'> ${shopDom} ${drinkDom} ${addressDom} ${distanceDom}
+          </li>
+        </div>`
+        console.log(listDom)
         marker[i] = new google.maps.Marker({ // マーカーの追加
           position: markerLatLng, // マーカーを立てる位置を指定
           animation: google.maps.Animation.DROP,
           map: map // マーカーを立てる地図を指定
         });
         infoWindow[i] = new google.maps.InfoWindow({
-          content: '<div class="map">' + markerData[i].shop_name + '</div>'
+          content: shopDom + drinkDom + distanceDom
         });
+        $("#menu").append(listDom)
+        list[i] = document.getElementById( `list${i}` )
+
         markerEvent(i);
+        listEvent(i);
         markerNum = i
       }
       console.log('otosita')
     }
 
     function markerEvent(i) {
-      marker[i].addListener('click', function() {
+      marker[i].addListener('click', function () {
+        markerLatLng = new google.maps.LatLng({
+        lat: parseFloat(markerData[i].shop_lat),
+        lng: parseFloat(markerData[i].shop_lng)
+        });
+        map.setCenter(markerLatLng)
         infoWindow[i].open(map, marker[i]);
       });
+    }
+    function listEvent(i) {
+      console.log[i]
+      list[i].addEventListener('click', function () {
+        markerLatLng = new google.maps.LatLng({
+        lat: parseFloat(markerData[i].shop_lat),
+        lng: parseFloat(markerData[i].shop_lng)
+        });
+        map.setCenter(markerLatLng)
+        infoWindow[i].open(map, marker[i]);
+      })
     }
 
     function deleteMarkers(markerNum) {
       if (markerNum != null)
-        for(var i = 0; i <= markerNum; i ++) {
+        for (let i = 0; i <= markerNum; i++) {
           if (marker[i] != null) marker[i].setMap(null);
         }
       marker = [];
     }
 
     function deleteMarkerLocation() {
-    if (markerLocation != null) markerLocation.setMap(null);
-    markerLocation = null;
+      if (markerLocation != null) markerLocation.setMap(null);
+      markerLocation = null;
     }
 
     function geolocation() {
@@ -120,12 +190,9 @@
           // 取得成功した場合
           function (position) {
             // 緯度・経度を変数に格納
-            var mapLatLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-            console.log(position.coords.latitude)
-            console.log(position.coords.longitude)
+            let mapLatLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
             map.setCenter(mapLatLng)
             deleteMarkerLocation()
-            deleteMarkers(markerNum)
             fetchApi(position.coords.latitude, position.coords.longitude)
 
 
@@ -167,7 +234,7 @@
           if (status == 'OK') {
             deleteMarkerLocation()
             deleteMarkers(markerNum)
-            var mapLocation = results[0].geometry.location
+            let mapLocation = results[0].geometry.location
             map.setCenter(mapLocation);
             markerLocation = new google.maps.Marker({
               map: map,
@@ -181,11 +248,28 @@
         });
     }
 
+    function getCenter() {
+      let latlng = map.getCenter()
+      fetchApi(latlng.lat(), latlng.lng(), )
+    }
+
     $("#address").keypress(function (e) {
       if (e.which == 13) {
         $("#geobutton").click();
       }
     });
+
+    window.onresize = function(){
+      if (menuSidebar.style.display == "block") {
+        if (window.matchMedia( "(max-width: 767px)").matches) {
+          mapWindow.style.height = '65%';
+          mapWindow.style.width = '100%';
+          } else {
+          mapWindow.style.width = '70%'
+          mapWindow.style.height = '100%'
+        }
+      }
+    }
   </script>
   <script src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['API_KEY'] %>&callback=initMap"></script>
 </body>
