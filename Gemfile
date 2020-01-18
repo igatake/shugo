@@ -33,7 +33,7 @@ gem 'levenshtein'
 gem 'dotenv-rails'
 gem 'http'
 gem 'haml-rails'
-gem 'gon'
+gem 'materialize-sass'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
@@ -41,6 +41,7 @@ group :development, :test do
   gem 'rspec-rails'
   gem 'ruby-debug-ide'
   gem 'debase'
+  gem 'rails-erd'
 end
 
 group :development do

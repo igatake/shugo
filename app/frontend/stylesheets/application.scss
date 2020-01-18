@@ -1,5 +1,8 @@
-@import '~bootstrap-material-design/scss/bootstrap-material-design';
-@import "./_maps";
+@import '~bootstrap/scss/bootstrap';
+@import "./maps";
+@import "./checkbox";
+@import "./selectbox";
+@import "./radiobutton";
 
 html, body {
   height: 100%;

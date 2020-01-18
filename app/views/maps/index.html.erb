@@ -18,13 +18,71 @@
         <input class="mr-sm-2 bg-light" type="textbox" id="address" placeholder="この地点を検索">
         <input type="button" id="geobutton" class="hd_btn my-2 my-sm-0" value="Search" onclick="codeAddress()">
       </div>
+      <div class="dropdown">
+        <button type="button" class="hd_btn my-1 my-sm-0 dropdown-toggle" type="button" data-toggle="dropdown">
+          生ビールの種類
+        </button>
+        <div class="dropdown-menu beer_lists checkbox">
+          <form name="beer_form">
+            <div class="check_item p-1">
+              <input type="checkbox" name="beer_items" class="dropdown-item my-1" id="check_nama" value="2">
+              <label for="check_nama">全ての生ビール</label>
+            </div>
+            <div class="check_item p-1">
+              <input type="checkbox" name="beer_items" class="dropdown-item my-1" id="check_bin" value="3">
+              <label for="check_bin">瓶ビール</label>
+            </div>
+            <div class="check_item p-1">
+              <input type="checkbox" name="beer_items" class="dropdown-item my-1" id="check_asahi" value="4">
+              <label for="check_asahi">スーパードライ<br>(アサヒ系)</label>
+            </div>
+            <div class="check_item p-1">
+              <input type="checkbox" name="beer_items" class="dropdown-item my-1" id="check_kirin" value="5">
+              <label for="check_kirin">一番搾り<br>(キリン系)</label>
+            </div>
+            <div class="check_item p-1">
+              <input type="checkbox" name="beer_items" class="dropdown-item my-1" id="check_sapporo" value="6">
+              <label for="check_sapporo">黒ラベル<br>(サッポロ系)</label>
+            </div>
+            <div class="check_item p-1">
+              <input type="checkbox" name="beer_items" class="dropdown-item my-1" id="check_suntory" value="7">
+              <label for="check_suntory">プレミアムモルツ<br>(サントリー系)</label>
+            </div>
+            <div class="check_item p-1">
+              <input type="checkbox" name="beer_items" class="dropdown-item my-1" id="check_ebisu" value="8">
+              <label for="check_ebisu">ヱビス</label>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="selectbox sel_num">
+        <select name="件数" id="select_num">
+          <option value="20" hidden>取得件数</option>
+          <option value="20">20件</option>
+          <option value="40">40件</option>
+          <option value="60">60件</option>
+        </select>
+      </div>
     </nav>
   </header>
 
   <main>
     <div id="wrap">
       <div id="map"></div>
-      <div id="menu"></div>
+      <div id="menu">
+        <div class="toggle-buttons">
+          <input id="item-1" class="radio-inline__input" type="radio" name="accessible-radio" value="item-1"
+            checked="checked" onclick="sortByDistance()" />
+          <label class="radio-inline__label" for="item-1">
+            近い順
+          </label>
+          <input id="item-2" class="radio-inline__input" type="radio" name="accessible-radio" value="item-2" onclick="sortByPrice()"/>
+          <label class="radio-inline__label" for="item-2">
+            安い順
+          </label>
+        </div>
+        <div id="shops_wraper"></div>
+      </div>
     </div>
   </main>
   <script>
@@ -37,8 +95,11 @@
     let markerLocation = null
     let mapOptions = {}
     let list = []
+    let genre_array = []
+    let shopNum = null
     let mapWindow = document.getElementById('map')
     let menuSidebar = document.getElementById('menu')
+    let shopsWraper = document.getElementById('shops_wraper')
 
     function initMap() {
       geocoder = new google.maps.Geocoder()
@@ -59,7 +120,7 @@
     }
 
     function showMenu() {
-      if (window.matchMedia( "(max-width: 767px)").matches) {
+      if (window.matchMedia("(max-width: 767px)").matches) {
         mapWindow.style.height = '60%';
       } else {
         mapWindow.style.width = '70%'
@@ -67,12 +128,48 @@
       menuSidebar.style.display = 'block';
     }
 
-    function fetchApi(lat, lng, shop_num = 20, genre_array) {
+    function getDrinkGenres() {
+      let genreElement = document.beer_form.beer_items
+      genre_array = []
+      for (let i = 0; i < genreElement.length; i++) {
+        if (genreElement[i].checked) {
+          genre_array.push(parseInt(genreElement[i].value));
+        }
+      }
+      console.log(genre_array)
+    }
+
+    function getShopNum() {
+      let shopElement = document.getElementById("select_num")
+      shopNum = shopElement.value
+      console.log(shopNum)
+    }
+
+    function eraseshopsWraper() {
+      if (document.getElementsByClassName('shop_list').length > 0) {
+      console.log(shopsWraper)
+      while (shopsWraper.firstChild) shopsWraper.removeChild(shopsWraper.firstChild);
+      }
+    }
+
+    function fetchApi(lat, lng) {
+      getDrinkGenres()
+      let drinkGenres
+      if (genre_array.length === 0) {
+        drinkGenres = [2]
+      } else {
+        drinkGenres = genre_array
+      }
+      getShopNum()
+      console.log(genre_array)
+      console.log(drinkGenres)
+      console.log(shopNum)
+
       let prm = {
         now_lat: lat,
         now_lng: lng,
-        shop_num: shop_num,
-        genre_array: genre_array
+        genre_array: drinkGenres,
+        shop_num: shopNum
       };
 
       fetch('/fetch_shops', {
@@ -94,10 +191,7 @@
     }
 
     function dropMarker(markerData) {
-      if (document.getElementsByClassName('shop_list').length > 0) {
-        console.log(menuSidebar)
-        while (menuSidebar.firstChild) menuSidebar.removeChild(menuSidebar.firstChild);
-      }
+      eraseshopsWraper()
       for (let i = 0; i < Object.keys(markerData).length; i++) {
         markerLatLng = new google.maps.LatLng({
           lat: parseFloat(markerData[i].shop_lat),
@@ -109,21 +203,23 @@
         let addressDom = ''
         let listDom = ''
 
-        shopDom = `<div><a href="https://www.hotpepper.jp${markerData[i].shop_url}" target="_blank"> ${markerData[i].shop_name} </a></div>`
+        shopDom =
+          `<div class="info_window"><a href="https://www.hotpepper.jp${markerData[i].shop_url}" target="_blank"> ${markerData[i].shop_name} </a></div>`
 
-        for (let [key, value] of Object.entries(markerData[i].drink)) {
-          drinkDom = drinkDom + `<div><a href="https://www.hotpepper.jp${markerData[i].shop_url}drink/"
-              target="_blank"> ${key}: ${value}円 </a></div>`
+        for (let v = 0; v < markerData[i].drinks.length; v++) {
+          drinkDom = drinkDom + `<div class="info_window"><a href="https://www.hotpepper.jp${markerData[i].shop_url}drink/"
+              target="_blank"> ${markerData[i].drinks[v][0]}: ${markerData[i].drinks[v][1]}円 </a></div>`
         }
 
         if (markerData[i].distance < 1) {
           let distanceForMetre = markerData[i].distance * 100
           distanceForMetre = Math.round(distanceForMetre) * 10
-          distanceDom = `<div><a href="http://maps.apple.com/?q=${markerData[i].shop_lat},${markerData[i].shop_lng}">
+          distanceDom = `<div class="info_window"><a href="http://maps.apple.com/?q=${markerData[i].shop_lat},${markerData[i].shop_lng}">
               ${distanceForMetre}m </a></div>`
         } else {
-          let distanceForKilo = Math.round(distanceForKilo) / 100
-          distanceDom = `<div><a href="http://maps.apple.com/?q=${markerData[i].shop_lat},${markerData[i].shop_lng}">
+          let distanceForKilo = markerData[i].distance * 10
+          distanceForKilo = Math.round(distanceForKilo) / 10
+          distanceDom = `<div class="info_window"><a href="http://maps.apple.com/?q=${markerData[i].shop_lat},${markerData[i].shop_lng}">
               ${distanceForKilo}km </a></div>`
         }
         listDom = `<div id="list${i}" class='shop_container'><li class=' shop_list'> ${shopDom} ${drinkDom} ${addressDom} ${distanceDom}
@@ -139,7 +235,7 @@
           content: shopDom + drinkDom + distanceDom
         });
         $("#menu").append(listDom)
-        list[i] = document.getElementById( `list${i}` )
+        list[i] = document.getElementById(`list${i}`)
 
         markerEvent(i);
         listEvent(i);
@@ -151,19 +247,20 @@
     function markerEvent(i) {
       marker[i].addListener('click', function () {
         markerLatLng = new google.maps.LatLng({
-        lat: parseFloat(markerData[i].shop_lat),
-        lng: parseFloat(markerData[i].shop_lng)
+          lat: parseFloat(markerData[i].shop_lat),
+          lng: parseFloat(markerData[i].shop_lng)
         });
         map.setCenter(markerLatLng)
         infoWindow[i].open(map, marker[i]);
       });
     }
+
     function listEvent(i) {
       console.log[i]
       list[i].addEventListener('click', function () {
         markerLatLng = new google.maps.LatLng({
-        lat: parseFloat(markerData[i].shop_lat),
-        lng: parseFloat(markerData[i].shop_lng)
+          lat: parseFloat(markerData[i].shop_lat),
+          lng: parseFloat(markerData[i].shop_lng)
         });
         map.setCenter(markerLatLng)
         infoWindow[i].open(map, marker[i]);
@@ -190,15 +287,16 @@
           // 取得成功した場合
           function (position) {
             // 緯度・経度を変数に格納
-            let mapLatLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-            map.setCenter(mapLatLng)
+            let mapLocation = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+            map.setCenter(mapLocation)
             deleteMarkerLocation()
+            deleteMarkers(markerNum)
             fetchApi(position.coords.latitude, position.coords.longitude)
 
 
-            marker = new google.maps.Marker({
+            markerLocation = new google.maps.Marker({
               map: map,
-              position: mapLatLng
+              position: mapLocation
             });
           },
           // 取得失敗した場合
@@ -250,7 +348,29 @@
 
     function getCenter() {
       let latlng = map.getCenter()
+      deleteMarkerLocation()
+      deleteMarkers(markerNum)
       fetchApi(latlng.lat(), latlng.lng(), )
+    }
+
+    function sortByPrice() {
+      let priceList = []
+      for (let i = 0; i < markerData.length; i++) {
+        priceList.push([i, markerData[i].drinks[0][1]])
+      }
+      console.log(priceList)
+      priceList.sort(function(a,b){return(a[1] - b[1])})
+      eraseshopsWraper()
+      for (let i = 0; i < priceList.length; i++) {
+        $("#shops_wraper").append(list[priceList[i][0]])
+      }
+    }
+
+    function sortByDistance() {
+      eraseshopsWraper()
+      for (let i = 0; i < list.length; i++) {
+        $("#shops_wraper").append(list[i]) 
+      }
     }
 
     $("#address").keypress(function (e) {
@@ -258,18 +378,6 @@
         $("#geobutton").click();
       }
     });
-
-    window.onresize = function(){
-      if (menuSidebar.style.display == "block") {
-        if (window.matchMedia( "(max-width: 767px)").matches) {
-          mapWindow.style.height = '65%';
-          mapWindow.style.width = '100%';
-          } else {
-          mapWindow.style.width = '70%'
-          mapWindow.style.height = '100%'
-        }
-      }
-    }
   </script>
   <script src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['API_KEY'] %>&callback=initMap"></script>
 </body>
