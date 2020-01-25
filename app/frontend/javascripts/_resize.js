@@ -1,6 +1,6 @@
 window.onresize = function() {
   if (menuSidebar.style.display == "block") {
-    if (window.matchMedia("(max-width: 767px)").matches) {
+    if (window.matchMedia("(max-width: 779px)").matches) {
       mapWindow.style.height = "50%";
       mapWindow.style.width = "100%";
     } else {

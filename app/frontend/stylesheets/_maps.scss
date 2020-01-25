@@ -11,6 +11,15 @@ li {
   position: relative;
 }
 
+.menu_footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  height: 15px;
+  text-align: center;
+  font-size: 8px;
+  background-color: rgb(255, 214, 34);
+}
 
 .shop_container {
   background-color: rgb(249, 243, 169);
@@ -72,6 +81,7 @@ li {
   #menu {
     width: 100%;
     height: 50%;
+    margin-bottom: 15px;
     overflow: scroll;
     font-size: 12px;
     box-shadow: -5px 0 6px;
@@ -85,6 +95,10 @@ li {
   #header_icon {
     height: 60px;
     width: auto;
+  }
+
+  .footer_pc {
+    display: none;
   }
 
   @media screen and (max-width:487px) {
@@ -151,6 +165,7 @@ li {
   #menu {
     width: 30%;
     height: 100%;
+    padding-bottom: 15px;
     float: right;
     overflow: scroll;
     font-size: 12px;
@@ -161,6 +176,10 @@ li {
 
     height: 50px;
     width: auto;
+  }
+
+  .footer_smartphone {
+    display: none;
   }
 
 }
