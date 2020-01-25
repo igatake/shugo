@@ -8,19 +8,25 @@ li {
 
 #menu {
   display: none;
+  position: relative;
 }
+
 
 .shop_container {
   background-color: rgb(249, 243, 169);
   margin: 10px;
   padding: 10px;
   text-decoration: none;
+  box-shadow: 0 2px 5px gray;
+  border-radius: 3px;
 }
 
-@media screen and (max-width:767px) {
+@media screen and (max-width:779px) {
   nav {
-    height: 105px;
-    background-color: rgb(249, 196, 9);
+    height: 100px;
+    background-color: #fff;
+    box-shadow: 0 2px 5px gray;
+    background-color: rgb(255, 214, 34);
   }
 
   .hd_btn {
@@ -65,26 +71,40 @@ li {
   
   #menu {
     width: 100%;
-    height: 40%;
+    height: 50%;
     overflow: scroll;
     font-size: 12px;
+    box-shadow: -5px 0 6px;
   }
 
   #map {
     height: 100%;
     width: 100%;
   }
+
+  #header_icon {
+    height: 60px;
+    width: auto;
+  }
+
+  @media screen and (max-width:487px) {
+    #header_icon {
+      height: 45px;
+      width: auto;
+    }
+  }
 }
 
-@media screen and (min-width:768px) {
+@media screen and (min-width:780px) {
   header {
-    height: 6%;
+    height: 60px;
   }
 
   nav {
     margin: 0;
-    height: 6%;
-    background-color: rgb(249, 196, 9);
+    height: 60px;
+    background-color: rgb(255, 214, 34);
+    box-shadow: 0 2px 5px gray;
   }
 
   .hd_btn {
@@ -134,5 +154,13 @@ li {
     float: right;
     overflow: scroll;
     font-size: 12px;
+    box-shadow: 0 -5px 6px;
   }
+
+  #header_icon {
+
+    height: 50px;
+    width: auto;
+  }
+
 }

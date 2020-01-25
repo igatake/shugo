@@ -1,0 +1,41 @@
+@media screen and (max-width:779px) {
+  #accordion {
+    position: fixed;
+    top: 100px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .accordion-container {
+    width: 100%;
+  }
+
+  .accordion-container .accordion-title {
+    position: fixed;
+    display: inherit;
+    margin: 0;
+    width: 100%;
+    background-color: rgb(255, 245, 158);
+    font-size: 1em;
+    font-weight: normal;
+    color: black;
+    box-shadow: 0 2px 2px gray;
+    cursor: pointer;
+  }
+
+  .accordion-content {
+    display: none;
+    background-color: #fff;
+    padding-top: 5px;
+  }
+}
+
+@media screen and (min-width:780px) {
+  .accordion-content {
+    display: inline-block;
+  }
+
+  .accordion-title {
+    display: none;
+  }
+}

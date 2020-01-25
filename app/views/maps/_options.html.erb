@@ -1,0 +1,45 @@
+<div class="dropdown">
+  <button type="button" class="hd_btn my-1 my-sm-0 dropdown-toggle " type="button" data-toggle="dropdown">
+    生ビールの種類
+  </button>
+  <div class="dropdown-menu beer_lists checkbox">
+    <form name="beer_form">
+      <div class="check_item p-1">
+        <input type="checkbox" name="beer_items" class="dropdown-item my-1" id="check_nama" value="2">
+        <label for="check_nama">全ての生ビール</label>
+      </div>
+      <div class="check_item p-1">
+        <input type="checkbox" name="beer_items" class="dropdown-item my-1" id="check_bin" value="3">
+        <label for="check_bin">瓶ビール</label>
+      </div>
+      <div class="check_item p-1">
+        <input type="checkbox" name="beer_items" class="dropdown-item my-1" id="check_asahi" value="4">
+        <label for="check_asahi">スーパードライ<br>(アサヒ系)</label>
+      </div>
+      <div class="check_item p-1">
+        <input type="checkbox" name="beer_items" class="dropdown-item my-1" id="check_kirin" value="5">
+        <label for="check_kirin">一番搾り<br>(キリン系)</label>
+      </div>
+      <div class="check_item p-1">
+        <input type="checkbox" name="beer_items" class="dropdown-item my-1" id="check_sapporo" value="6">
+        <label for="check_sapporo">黒ラベル<br>(サッポロ系)</label>
+      </div>
+      <div class="check_item p-1">
+        <input type="checkbox" name="beer_items" class="dropdown-item my-1" id="check_suntory" value="7">
+        <label for="check_suntory">プレミアムモルツ<br>(サントリー系)</label>
+      </div>
+      <div class="check_item p-1">
+        <input type="checkbox" name="beer_items" class="dropdown-item my-1" id="check_ebisu" value="8">
+        <label for="check_ebisu">ヱビス</label>
+      </div>
+    </form>
+  </div>
+</div>
+<div class="selectbox sel_num hide_options">
+  <select name="件数" id="select_num">
+    <option value="20" hidden>取得件数</option>
+    <option value="20">20件</option>
+    <option value="40">40件</option>
+    <option value="60">60件</option>
+  </select>
+</div>

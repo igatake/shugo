@@ -1,5 +1,5 @@
 .selectbox {
-  overflow: hidden;   
+  display: inline-block;
   text-align: center;
 }
 
@@ -44,6 +44,18 @@
 }
 
 .selectbox.sel_num select {
-  padding: 8px 38px 8px 8px;
+  padding: 5px 38px 5px 8px;
   color: #666666;
+}
+
+.dropdown {
+  display: inline-block;
+}
+
+@media screen and (max-width:767px) {
+  .beer_lists {
+    margin: 0;
+    padding: 0;
+    font-size: 0.8rem;
+  }
 }
