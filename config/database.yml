@@ -9,16 +9,15 @@ default: &default
   charset: utf8mb4
   collation: utf8mb4_general_ci
   encodeing: utf8mb4
-  reconnect: false
-  database: shugo_development
   pool: 5
-  username: <%= ENV['RAILS_DATABASE_USER'] %>
-  password: <%= ENV['RAILS_DATABASE_PASSWORD'] %>
-  host: localhost
   socket: /tmp/mysql.sock
 
 development:
   <<: *default
+  database: shugo_development
+  username: <%= ENV['RAILS_DATABASE_USER'] %>
+  password: <%= ENV['RAILS_DATABASE_PASSWORD'] %>
+  host: localhost
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
@@ -29,4 +28,6 @@ test:
 
 production:
   <<: *default
-  database: db/production.mysql2
+  database: db/shugo_production
+  username: root
+  password:
