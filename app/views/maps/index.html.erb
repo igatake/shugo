@@ -155,18 +155,15 @@
           genre_array.push(parseInt(genreElement[i].value));
         }
       }
-      console.log(genre_array)
     }
 
     function getShopNum() {
       let shopElement = document.getElementById("select_num")
       shopNum = shopElement.value
-      console.log(shopNum)
     }
 
     function eraseshopsWraper() {
       if (document.getElementsByClassName('shop_list').length > 0) {
-        console.log(shopsWraper)
         while (shopsWraper.firstChild) shopsWraper.removeChild(shopsWraper.firstChild);
       }
     }
@@ -180,9 +177,6 @@
         drinkGenres = genre_array
       }
       getShopNum()
-      console.log(genre_array)
-      console.log(drinkGenres)
-      console.log(shopNum)
 
       let prm = {
         now_lat: lat,
@@ -244,7 +238,6 @@
         listDom = `<div id="list${i}" class='shop_container'><li class=' shop_list'> ${shopDom} ${drinkDom} ${addressDom} ${distanceDom}
           </li>
         </div>`
-        console.log(listDom)
         marker[i] = new google.maps.Marker({ // マーカーの追加
           position: markerLatLng, // マーカーを立てる位置を指定
           animation: google.maps.Animation.DROP,
@@ -261,7 +254,6 @@
         listEvent(i);
         markerNum = i
       }
-      console.log('otosita')
     }
 
     function markerEvent(i) {
@@ -276,7 +268,6 @@
     }
 
     function listEvent(i) {
-      console.log[i]
       list[i].addEventListener('click', function () {
         markerLatLng = new google.maps.LatLng({
           lat: parseFloat(markerData[i].shop_lat),
@@ -385,7 +376,6 @@
       for (let i = 0; i < markerData.length; i++) {
         priceList.push([i, markerData[i].drinks[0][1]])
       }
-      console.log(priceList)
       priceList.sort(function (a, b) {
         return (a[1] - b[1])
       })
