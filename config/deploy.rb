@@ -8,14 +8,17 @@ set :repo_url, "git@example.com:igatake/shugo.git"
 # デプロイをするフォルダの指定
 set :deploy_to, "/var/www/rails/shugo"
 
+# シンボリックリンクをはるファイル。(※後述)
+set :linked_files, fetch(:linked_files, []).push('config/settings.yml')
+
 # シンボリックリンクをはるフォルダ
 set :linked_dirs, fetch(:linked_dirs, []).push('log', 'tmp/pids', 'tmp/cache', 'tmp/sockets','public/packs','node_modules', 'vendor/bundle', 'public/system')
 
 # 過去にリリースしたアプリケーションをキープする数（デフォルトは5）
-set :keep_releases, 2
+set :keep_releases, 5
 
 # rubyのバージョン
-set :rbenv_ruby, '2.6.5'
+set :rbenv_ruby, '2.6.1'
 
 #出力するログのレベル。
 set :log_level, :debug

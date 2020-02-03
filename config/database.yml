@@ -24,10 +24,10 @@ development:
 # Do not set this db to the same as development or production.
 test:
   <<: *default
-  database: db/shugo_test
+  database: shugo_test
 
 production:
   <<: *default
-  database: db/shugo_production
+  database: shugo_production
   username: root
   password:
