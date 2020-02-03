@@ -2,8 +2,7 @@ namespace :crawl_hp do
   desc "DrinkGenre作成"
   task :make_models_of_drink_genre => :environment do
     def make_model(model_name)
-      drink_genre = DrinkGenre.new(genre_name: model_name.to_s)
-      drink_genre.save!
+      drink_genre = DrinkGenre.create(genre_name: model_name.to_s)
       log = Logger.new(STDOUT)
       log.info("made model #{model_name}")
     end
