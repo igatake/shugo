@@ -4,7 +4,6 @@
 
 <head>
   <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
-  <title>Simple Map</title>
   <link rel="shortcut icon" href="/favicon/favicon.ico" />
 
   <meta content="initial-scale=1.0" name="viewport" />
@@ -13,18 +12,18 @@
 
 <body>
   <header>
-    <nav class="navbar fixed-top justify-content-around navbar-dark mx-auto">
+    <nav id="header_nav"class="navbar fixed-top justify-content-around navbar-dark mx-auto">
       <%= image_tag '/shugo.png', alt: 'shugo icon', id: 'header_icon' %>
-      <button type="button" class="hd_btn my-1 my-sm-0" onclick='geolocation()'>現在地</button>
-      <button type="button" class="hd_btn my-1 my-sm-0" onclick='getFromCenter()'>この周辺</button>
+      <button type="button" id='get_geolocation_btn' class="hd_btn my-1 my-sm-0">現在地</button>
+      <button type="button" id='get_center_btn' class="hd_btn my-1 my-sm-0">この周辺</button>
       <div class="form-inline" name='geocode'>
         <input class="mr-sm-2 bg-light" type="textbox" id="address" placeholder="この地点を検索">
-        <input type="button" id="geobutton" class="hd_btn my-2 my-sm-0" value="Search" onclick="codeAddress()">
+        <input type="button" id="geocode_btn" class="hd_btn my-2 my-sm-0" value="Search">
       </div>
       <div id="accordion" class="accordion-container">
         <div class="accordion-content">
           <div class="dropdown mx-2">
-            <button type="button" class="hd_btn my-1 my-sm-0 dropdown-toggle" type="button" data-toggle="dropdown">
+            <button type="button" class="hd_btn my-1 my-sm-0" type="button" id='list_dropdown'>
               生ビールの種類
             </button>
             <div class="dropdown-menu beer_lists checkbox">
@@ -291,86 +290,6 @@
       markerLocation = null;
     }
 
-    function geolocation() {
-      if (navigator.geolocation) {
-        // 現在地を取得
-        navigator.geolocation.getCurrentPosition(
-          // 取得成功した場合
-          function (position) {
-            // 緯度・経度を変数に格納
-            let mapLocation = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-            map.setCenter(mapLocation)
-            deleteMarkerLocation()
-            deleteMarkers(markerNum)
-            fetchApi(position.coords.latitude, position.coords.longitude)
-
-
-            markerLocation = new google.maps.Marker({
-              map: map,
-              animation: google.maps.Animation.DROP,
-              position: mapLocation
-            });
-          },
-          // 取得失敗した場合
-          function (error) {
-            // エラーメッセージを表示
-            switch (error.code) {
-              case 1: // PERMISSION_DENIED
-                alert("位置情報の利用が許可されていません");
-                break;
-              case 2: // POSITION_UNAVAILABLE
-                alert("現在位置が取得できませんでした");
-                break;
-              case 3: // TIMEOUT
-                alert("タイムアウトになりました");
-                break;
-              default:
-                alert("その他のエラー(エラーコード:" + error.code + ")");
-                break;
-            }
-          }
-        );
-      } else {
-        alert("この端末では位置情報が取得できません");
-      }
-    }
-
-    function codeAddress() {
-      let inputAddress = document.getElementById('address').value;
-      geocoder.geocode({
-          'address': inputAddress
-        },
-        function (results, status) {
-          if (status == 'OK') {
-            deleteMarkerLocation()
-            deleteMarkers(markerNum)
-            let mapLocation = results[0].geometry.location
-            map.setCenter(mapLocation);
-            markerLocation = new google.maps.Marker({
-              map: map,
-              animation: google.maps.Animation.DROP,
-              position: mapLocation
-            });
-            fetchApi(results[0].geometry.location.lat(), results[0].geometry.location.lng())
-
-          } else {
-            alert('Geocode was not successful for the following reason: ' + status);
-          }
-        });
-    }
-
-    function getFromCenter() {
-      let latlng = map.getCenter()
-      deleteMarkerLocation()
-      deleteMarkers(markerNum)
-      markerLocation = new google.maps.Marker({
-        map: map,
-        animation: google.maps.Animation.DROP,
-        position: latlng
-      });
-      fetchApi(latlng.lat(), latlng.lng(), )
-    }
-
     function sortByPrice() {
       let priceList = []
       for (let i = 0; i < markerData.length; i++) {
@@ -392,11 +311,6 @@
       }
     }
 
-    $("#address").keypress(function (e) {
-      if (e.which == 13) {
-        $("#geobutton").click();
-      }
-    });
   </script>
   <script src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['API_KEY'] %>&callback=initMap"></script>
 </body>

@@ -1,5 +1,7 @@
 import 'bootstrap-material-design'
-import './_map_index'
+import './_geolocation'
+import './_geocode'
+import './_get_center'
 import './_checkbox'
 import './_resize'
 import './_accordion'

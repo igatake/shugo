@@ -5,19 +5,20 @@ function geolocation() {
       // 取得成功した場合
       function(position) {
         // 緯度・経度を変数に格納
-        var mapLatLng = new google.maps.LatLng(
+        let mapLocation = new google.maps.LatLng(
           position.coords.latitude,
           position.coords.longitude
         );
-        console.log(position.coords.latitude);
-        console.log(position.coords.longitude);
+        map.setCenter(mapLocation);
+        deleteMarkerLocation();
+        deleteMarkers(markerNum);
+        fetchApi(position.coords.latitude, position.coords.longitude);
+        console.log('yobareta')
 
-        deleteMarker();
-        map.setCenter(mapLatLng);
-
-        marker = new google.maps.Marker({
+        markerLocation = new google.maps.Marker({
           map: map,
-          position: mapLatLng
+          animation: google.maps.Animation.DROP,
+          position: mapLocation
         });
       },
       // 取得失敗した場合
@@ -43,3 +44,7 @@ function geolocation() {
     alert("この端末では位置情報が取得できません");
   }
 }
+$(document).on('touchend click', '#get_geolocation_btn', function(){
+  event.preventDefault();
+  geolocation();
+})
