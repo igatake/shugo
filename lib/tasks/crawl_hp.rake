@@ -29,7 +29,7 @@ namespace :crawl_hp do
 
     def rand_sleep
       rand = Random.new
-      sleep(rand.rand(1.0..3.0) + 5)
+      sleep(rand.rand(1.0..3.0) + 3)
     end
 
     Anemone.crawl(url, skip_quary_strings: true, delay: 10, user_agent: "Mac Safari 4") do |anemone|
@@ -60,6 +60,11 @@ namespace :crawl_hp do
             shop_url = shop_block.xpath(
               ".//a[@class='fs18 bold lh22 marB1']"
             ).attribute("href").text
+
+            if Shop.find_by(shop_url: shop_url)
+              puts "#{shop_url} was skipped"
+              next
+            end
 
             shop_link = URI("https://www.hotpepper.jp#{shop_url}").read
             drink_link = URI("https://www.hotpepper.jp#{shop_url}drink/").read
