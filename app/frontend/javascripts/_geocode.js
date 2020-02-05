@@ -34,6 +34,5 @@ $(document).on("touchend click", "#geocode_btn", function() {
 $(document).on("keydown", "#address", function(e) {
   if (e.keyCode === 13) {
     codeAddress();
-    console.log("a");
   }
 });

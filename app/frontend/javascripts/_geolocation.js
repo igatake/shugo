@@ -13,7 +13,6 @@ function geolocation() {
         deleteMarkerLocation();
         deleteMarkers(markerNum);
         fetchApi(position.coords.latitude, position.coords.longitude);
-        console.log('yobareta')
 
         markerLocation = new google.maps.Marker({
           map: map,
