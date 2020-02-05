@@ -270,7 +270,7 @@ namespace :crawl_hp do
       end
     end
 
-    drinks = Drink.all
+    drinks = Drink.where(drink_genre: nil)
     drinks.each do |drink|
       if (/ビール|アサヒ|キリン|サッポロ|ヱビスビール|エビス|モルツ/ =~ drink.drink_name) &&
          (/金麦|ノンアルコール|ベース|ゼロ|フリー|零|甘太郎|クリア|ホップ|シャンディ|トマト|レッド|カシス|オレンジ|カンパリ/ !~ drink.drink_name)
