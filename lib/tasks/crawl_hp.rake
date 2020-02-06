@@ -31,7 +31,7 @@ namespace :crawl_hp do
       sleep(rand.rand(1.0..3.0) + sec.to_i)
     end
 
-    for i in 0..851
+    (0..851).each do |i|
       begin
         p url = "https://www.hotpepper.jp/yoyaku/SA11/bgn#{852 - i}"
         html = URI(url).read
@@ -98,8 +98,8 @@ namespace :crawl_hp do
 
               # 将来的には綺麗にしたい
               if (drink_name.length <= 25) && # 25文字以上のドリンクないでしょ
-                  (drink_price != 0) && # priceがたまに0のがあるから排除
-                  (drink_price <= 1000) #1000円以上のドリンクは飲み放題とかかぶるからなし
+                 (drink_price != 0) && # priceがたまに0のがあるから排除
+                 (drink_price <= 1000) #1000円以上のドリンクは飲み放題とかかぶるからなし
                 drink = shop.drinks.find_or_initialize_by(drink_name: drink_name)
                 drink.drink_price = drink_price
                 drink.crawled_at = date
@@ -270,49 +270,51 @@ namespace :crawl_hp do
       end
     end
 
-    drinks = Drink.where(drink_genre: nil)
-    drinks.each do |drink|
-      if (/ビール|アサヒ|キリン|サッポロ|ヱビスビール|エビス|モルツ/ =~ drink.drink_name) &&
-         (/金麦|ノンアルコール|ベース|ゼロ|フリー|零|甘太郎|クリア|ホップ|シャンディ|トマト|レッド|カシス|オレンジ|カンパリ/ !~ drink.drink_name)
-        kirin = similarity(drink.drink_name, "キリン一番搾り")
-        asahi = similarity(drink.drink_name, "アサヒスーパードライ")
-        puremoru = similarity(drink.drink_name, "ザ・プレミアム・モルツ")
-        sapporo = similarity(drink.drink_name, "サッポロ黒ラベル")
-        ebisu = similarity(drink.drink_name, "ヱビスビール")
+    while Drink.where(drink_genre: nil).count != 0
+      drinks = Drink.where(drink_genre: nil).limit(1000)
+      drinks.each do |drink|
+        if (/ビール|アサヒ|キリン|サッポロ|ヱビスビール|エビス|モルツ/ =~ drink.drink_name) &&
+           (/金麦|ノンアルコール|ベース|ゼロ|フリー|零|甘太郎|クリア|ホップ|シャンディ|トマト|レッド|カシス|オレンジ|カンパリ/ !~ drink.drink_name)
+          kirin = similarity(drink.drink_name, "キリン一番搾り")
+          asahi = similarity(drink.drink_name, "アサヒスーパードライ")
+          puremoru = similarity(drink.drink_name, "ザ・プレミアム・モルツ")
+          sapporo = similarity(drink.drink_name, "サッポロ黒ラベル")
+          ebisu = similarity(drink.drink_name, "ヱビスビール")
 
-        drink_array = [kirin, asahi, puremoru, sapporo, ebisu]
+          drink_array = [kirin, asahi, puremoru, sapporo, ebisu]
 
-        drink_array.sort!.reverse!
+          drink_array.sort!.reverse!
 
-        if drink.drink_name.include?("瓶ビール")
-          genre_save(drink, drink.shop_id, 3)
-        elsif drink_array[0] <= 0.15
-          if drink.drink_name.include?("生ビール")
+          if drink.drink_name.include?("瓶ビール")
+            genre_save(drink, drink.shop_id, 3)
+          elsif drink_array[0] <= 0.15
+            if drink.drink_name.include?("生ビール")
+              finer_check(drink)
+            else
+              genre_save(drink, drink.shop_id, 1)
+            end
+          elsif drink_array[0] == asahi
+            if drink.drink_name.include?("アサヒ") || drink.drink_name.include?("スーパードライ")
+              genre_save(drink, drink.shop_id, 4)
+            else
+              genre_save(drink, drink.shop_id, 1)
+            end
+          elsif drink_array[0] == kirin
+            genre_save(drink, drink.shop_id, 5)
+          elsif drink_array[0] == sapporo
+            genre_save(drink, drink.shop_id, 6)
+          elsif drink_array[0] == puremoru
+            genre_save(drink, drink.shop_id, 7)
+          elsif drink.drink_name.include?("ヱビス") || drink.drink_name.include?("エビス")
+            genre_save(drink, drink.shop_id, 8)
+          elsif drink.drink_name.include?("生ビール")
             finer_check(drink)
           else
             genre_save(drink, drink.shop_id, 1)
           end
-        elsif drink_array[0] == asahi
-          if drink.drink_name.include?("アサヒ") || drink.drink_name.include?("スーパードライ")
-            genre_save(drink, drink.shop_id, 4)
-          else
-            genre_save(drink, drink.shop_id, 1)
-          end
-        elsif drink_array[0] == kirin
-          genre_save(drink, drink.shop_id, 5)
-        elsif drink_array[0] == sapporo
-          genre_save(drink, drink.shop_id, 6)
-        elsif drink_array[0] == puremoru
-          genre_save(drink, drink.shop_id, 7)
-        elsif drink.drink_name.include?("ヱビス") || drink.drink_name.include?("エビス")
-          genre_save(drink, drink.shop_id, 8)
-        elsif drink.drink_name.include?("生ビール")
-          finer_check(drink)
         else
           genre_save(drink, drink.shop_id, 1)
         end
-      else
-        genre_save(drink, drink.shop_id, 1)
       end
     end
   end
@@ -320,7 +322,7 @@ namespace :crawl_hp do
   desc "geocode"
   task :add_lat_and_lng => :environment do
     def geocode(shop)
-      uri = URI.escape("https://maps.googleapis.com/maps/api/geocode/json?language=ja&address=" + shop.shop_address + "&key=#{ENV["API_KEY"]}")
+      uri = URI.escape("https://maps.googleapis.com/maps/api/geocode/json?language=ja&address=" + shop.shop_address + "&key=#{ENV['API_KEY']}")
       res = HTTP.get(uri).to_s
       response = JSON.parse(res)
       check = response["status"]
