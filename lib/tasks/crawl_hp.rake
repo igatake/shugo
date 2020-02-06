@@ -35,6 +35,7 @@ namespace :crawl_hp do
       begin
         p url = "https://www.hotpepper.jp/yoyaku/SA11/bgn#{852 - i}"
         html = URI(url).read
+        sleep(1)
         # 各ページのHTML解析
         doc = Nokogiri::HTML(html, nil, "utf-8")
 
@@ -51,35 +52,38 @@ namespace :crawl_hp do
 
           if Shop.find_by(shop_url: shop_url)
             puts "#{shop_url} was skipped"
+            rand_sleep(1)
             next
           end
 
           shop_link = URI("https://www.hotpepper.jp#{shop_url}").read
-          drink_link = URI("https://www.hotpepper.jp#{shop_url}drink/").read
           drink_num = 1
           rand_sleep(3)
-
+          
           begin
             doc_each_shop = Nokogiri::HTML(shop_link, nil, "utf-8")
-
+            
             # 店舗名取得
             shop_name = doc_each_shop.xpath(".//h1[@class='shopName']").text
-
+            
             # 店舗の住所取得
             shop_address = doc_each_shop.xpath(".//td/address[position()=1]").text.strip
-
+            
             shop = Shop.find_or_initialize_by(shop_url: shop_url, shop_address: shop_address)
+            sleep(1)
             shop.shop_name = shop_name
             shop.crawled_at = date
             p shop
             shop.save!
+            rand_sleep(3)
           rescue => e
             scrape_log = Logger.new("log/scrape.log", 2, 10 * 1024)
             scrape_log.error("#{e}: was closed")
             rand_sleep(3)
           end
-
+          
           begin
+            drink_link = URI("https://www.hotpepper.jp#{shop_url}drink/").read
             doc_drink = Nokogiri::HTML(drink_link, nil, "utf-8")
 
             # drinkメニューHTML取得
@@ -101,6 +105,7 @@ namespace :crawl_hp do
                  (drink_price != 0) && # priceがたまに0のがあるから排除
                  (drink_price <= 1000) #1000円以上のドリンクは飲み放題とかかぶるからなし
                 drink = shop.drinks.find_or_initialize_by(drink_name: drink_name)
+                sleep(1)
                 drink.drink_price = drink_price
                 drink.crawled_at = date
                 p drink
