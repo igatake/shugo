@@ -1,1 +1,101 @@
-<h1>酒好きの<br />酒好きによる<br />酒好きのためマップ</h1>
+<body>
+  <div class="skinBody">
+    <div class="skinBody2">
+      <div class="skinBody3">
+        <div class="skinFrame">
+          <div class="content">
+
+            <div class="col-sm-12 About About__key">
+              <h1 class="About__key__message__1">酒好きに捧げる</h1>
+              <h1 class="About__key__message__2">マッピングアプリ</h1>
+              <%= image_tag '/shugo_title.png', alt: 'shugo title', class: 'About__key__img' %>
+            </div>
+
+            <div class="prob">
+              <h2>酒好きの悩みを解決する</h2>
+              <div class="col-sm-6 About">
+                <div class="prob__container prob__1">
+                  <p class="prob__text">好きな生ビールの銘柄じゃなかった
+                    <br>生ビールが発泡酒しかなかった
+                    <br>会社の都合で飲めるビールが決まっている</p>
+                </div>
+              </div>
+              <div class="col-sm-6 About">
+                <div class="prob__container prob__2">
+                  <p class="prob__text">慣れない土地の居酒屋の相場がわからない
+                    <br>とにかく安い店を探したい</p>
+                </div>
+              </div>
+              <div class="col-sm-12">
+                <i class="fas fa-arrow-down"></i>
+              </div>
+              <div class="col-sm-12 About">
+                <div class="prob__container prob__1">
+                  <p class="prob__sol">生ビールの銘柄で検索可能
+                    <br>現在地(指定した地点)からの距離と周辺のビールの値段がわかる
+                    <br>検索結果を近い順or安い順に並べ替え可能</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="About usage col-sm-12">
+              <h2>使い方</h2>
+              <div class="col-sm-4 About">
+                <div class="usage__container">
+                  <%= image_tag '/shugo_sample1.png', class: 'usage__img' %>
+                  <p>銘柄と検索する地点を選ぶ</p>
+                </div>
+              </div>
+              <div class="col-sm-4 About">
+                <div class="usage__container">
+                  <%= image_tag '/shugo_sample2.png', class: 'usage__img' %>
+                  <p>検索結果がリストアップされる</p>
+                </div>
+              </div>
+              <div class="col-sm-4 About">
+                <div class="usage__container">
+                  <%= image_tag '/shugo_sample3.png', class: 'usage__img' %>
+                  <p>マップ上のマーカーかリストをクリックすると詳細が吹き出しが表示される</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="About feature col-sm-12">
+              <h1>東京都内全域をカバー<br><br>都内の居酒屋<br><span>１万５千店舗以上</span><br>から探せる</h1>
+            </div>
+
+            <div class="About col-sm-12 next">
+              <h2>今後の開発予定</h2>
+              <div class="col-sm-6 About">
+                <div class="next__container">
+                  <h4>ユーザー登録機能</h4>
+                  <p>お気に入りのお店の保存や<br>お店の口コミ投稿でもっと使いやすく</p>
+                </div>
+              </div>
+              <div class="col-sm-6 About">
+                <div class="next__container">
+                  <h4>ドリンク検索機能</h4>
+                  <p>生ビールだけではなく、<br>様々なドリンクの名前から検索可能に</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="About col-sm-12 shugo_img_container">
+              <h2>使ってみる<i class="far fa-hand-point-down"></i></h2>
+              <%= link_to  root_path do %>
+              <%= image_tag '/shugo.png', class: 'entry_img'%>
+              <% end %>
+            </div>
+
+            <div class="col-sm-12 About About__contact">
+              <div class="contact__container">
+                <h3>製作者へのご意見ご要望等ありましたらこちらまで</h3>
+                <a href="mailto:shugo.tokyo@gmail.com">shugo.tokyo@gmail.com</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>

@@ -1,0 +1,238 @@
+$mobile: "screen and (max-width:576px)";
+$tablet: "screen and (max-width:1024px)";
+$pc: "screen and (min-width:1025px)";
+
+
+h2 {
+  font-size: 4vw;
+
+  @media #{$mobile} {
+    font-size: 6vw;
+  }
+}
+
+.content {
+  margin: 0 5vw;
+}
+
+.About {
+  float: left;
+  display: inline-block;
+
+  &__key {
+    height: auto;
+    text-align: center;
+    font-family: 'arial black';
+    padding-top: 8vh;
+    padding-bottom: 8vh;
+
+    @media #{$mobile} {
+      padding-top: 10vh;
+      padding-bottom: 10vh;
+    }
+
+    h1 {
+      @media #{$tablet} {
+        font-size: 8vw;
+      }
+
+      @media #{$pc} {
+        font-size: 5vw;
+      }
+    }
+
+    &__img {
+      margin-top: 5vw;
+      width: 70%;
+      height: auto;
+    }
+  }
+}
+
+.prob {
+  text-align: center;
+  font-family: 'arial black';
+  font-size: 8vw;
+
+  &__text {
+    font-size: 2vw;
+
+    @media #{$mobile} {
+      font-size: 4vw;
+    }
+  }
+
+  &__sol {
+    font-size: 2.7vw;
+  }
+
+  &__container {
+    position: relative;
+    margin: 3% 0;
+    padding: 3vw;
+    height: 18vw;
+    border-radius: 10px;
+    vertical-align: middle;
+    background-color: rgba(255, 255, 255, 0.5);
+
+    p {
+      position: absolute;
+      width: 95%;
+      top: 50%;
+      left: 50%;
+      -webkit-transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+
+    @media #{$tablet} {
+      height: 21vw;
+    }
+
+    @media #{$mobile} {
+      height: 30vw;
+    }
+  }
+}
+
+.usage {
+  margin-top: 10vh;
+  text-align: center;
+  font-family: 'Impact';
+
+  &__container {
+    position: relative;
+    height: 40vw;
+    margin: 5% 0;
+    padding: 1.5vw;
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.5);
+
+    @media #{$mobile} {
+      height: auto;
+    }
+
+    p {
+      font-size: 1.5vw;
+
+      @media #{$mobile} {
+        padding-top: 2vw;
+        font-size: 4vw;
+      }
+
+      @media screen and (min-width:577px) {
+        position: absolute;
+        top: 80%;
+        left: 50%;
+        -webkit-transform: translate(-50%, -19%);
+        transform: translate(-50%, -19%);
+        width: 95%;
+      }
+
+      @media #{$pc} {
+        top: 85%;
+        -webkit-transform: translate(-50%, -15%);
+        transform: translate(-50%, -15%);
+      }
+    }
+  }
+
+  &__img {
+    width: 100%;
+    height: auto;
+  }
+}
+
+.feature {
+  margin: 10vh auto 0;
+  text-align: center;
+  font-family: 'Impact';
+
+  h1 {
+    @media #{$tablet} {
+      font-size: 8vw;
+    }
+
+    @media #{$pc} {
+      font-size: 7vw;
+    }
+  }
+
+  span {
+    @media #{$tablet} {
+      font-size: 10vw;
+    }
+
+    @media #{$pc} {
+      font-size: 10vw;
+    }
+  }
+}
+
+.next {
+  margin-top: 10vw;
+  text-align: center;
+  font-family: 'Impact';
+
+  h4 {
+    font-size: 3vw;
+
+    @media #{$mobile} {
+      font-size: 5vw;
+    }
+  }
+
+  p {
+    font-size: 1.8vw;
+
+    @media #{$mobile} {
+      font-size: 3.5vw;
+    }
+  }
+
+  &__container {
+    margin: 3% 0;
+    padding: 2vw;
+    height: 15vw;
+    border-radius: 10px;
+    vertical-align: middle;
+    background-color: rgba(255, 255, 255, 0.5);
+
+    @media #{$mobile} {
+      height: 25vw;
+    }
+  }
+}
+
+.shugo_img_container {
+  margin-top: 10vw;
+  text-align: center;
+  font-family: 'arial black';
+}
+
+.entry_img {
+  width: 50%;
+  height: auto;
+}
+
+.contact__container {
+  margin: 3% 0;
+  padding: 2vw;
+  text-align: center;
+
+  h3 {
+    @media #{$tablet} {
+      font-size: 3.5vw;
+    }
+  }
+
+  a {
+    text-decoration: none;
+    color: black;
+    font-size: 1.5vw;
+
+    @media #{$tablet} {
+      font-size: 3vw;
+    }
+  }
+}
