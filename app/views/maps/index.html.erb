@@ -12,7 +12,7 @@
 
 <body>
   <header>
-    <nav id="header_nav"class="justify-content-around navbar-dark mx-auto">
+    <nav id="header_nav" class="justify-content-around navbar-dark mx-auto">
       <%= image_tag '/shugo.png', alt: 'shugo icon', id: 'header_icon' %>
       <button type="button" id='get_geolocation_btn' class="hd_btn my-1 my-sm-0">現在地</button>
       <button type="button" id='get_center_btn' class="hd_btn my-1 my-sm-0">この周辺</button>
@@ -112,6 +112,7 @@
     let markerNum = null
     let markerLocation = null
     let mapOptions = {}
+    let mapStyles = []
     let list = []
     let genre_array = []
     let shopNum = null
@@ -122,14 +123,52 @@
     function initMap() {
       geocoder = new google.maps.Geocoder()
 
+      mapStyles = [{
+          "featureType": "administrative.land_parcel",
+          "elementType": "labels",
+          "stylers": [{
+            "visibility": "off"
+          }]
+        },
+        {
+          "featureType": "poi",
+          "elementType": "labels.text",
+          "stylers": [{
+            "visibility": "off"
+          }]
+        },
+        {
+          "featureType": "poi.business",
+          "stylers": [{
+            "visibility": "off"
+          }]
+        },
+        {
+          "featureType": "poi.park",
+          "elementType": "labels.text",
+          "stylers": [{
+            "visibility": "off"
+          }]
+        },
+        {
+          "featureType": "road.local",
+          "elementType": "labels",
+          "stylers": [{
+            "visibility": "off"
+          }]
+        }
+      ]
+
       mapOptions = {
         disableDefaultUI: true,
         zoom: 17, // 拡大倍率
         center: {
           lat: 35.7299504,
           lng: 139.7000289,
-        } // 緯度・経度
+        }, // 緯度・経度
+        styles: mapStyles
       };
+
 
       map = new google.maps.Map(
         mapWindow,
@@ -311,6 +350,17 @@
       }
     }
 
+    window.onresize = function () {
+      if (menuSidebar.style.display == "block") {
+        if (window.matchMedia("(max-width: 779px)").matches) {
+          mapWindow.style.height = "50%";
+          mapWindow.style.width = "100%";
+        } else {
+          mapWindow.style.width = "70%";
+          mapWindow.style.height = "100%";
+        }
+      }
+    };
   </script>
   <script src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['API_KEY'] %>&callback=initMap"></script>
 </body>
