@@ -33,7 +33,7 @@ namespace :crawl_hp do
 
     (0..575).each do |i|
       begin
-        p url = "https://www.hotpepper.jp/SA11/G001/bgn#{i}"
+        p url = "https://www.hotpepper.jp/yoyaku/SA11/bgn#{i}"
         html = URI(url).read
         sleep(1)
         # 各ページのHTML解析
@@ -140,7 +140,7 @@ namespace :crawl_hp do
       sleep(rand.rand(1.0..3.0) + sec.to_i)
     end
 
-    (0..851).each do |i|
+    (0..575).each do |i|
       begin
         p url = "https://www.hotpepper.jp/SA11/G001/bgn#{i}"
         html = URI(url).read
@@ -159,7 +159,6 @@ namespace :crawl_hp do
 
           if Shop.find_by(shop_url: shop_url)
             puts "#{shop_url} was skipped"
-            rand_sleep(1)
             next
           end
 
@@ -180,6 +179,7 @@ namespace :crawl_hp do
             sleep(1)
             shop.shop_name = shop_name
             shop.crawled_at = date
+            p url
             p shop
             shop.save!
             rand_sleep(3)
