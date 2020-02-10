@@ -6,18 +6,22 @@ class Shop < ApplicationRecord
   validates :shop_name, presence: true
   validates :shop_address, presence: true
 
-  def self.get_shops(lat_now, lng_now, genre_array, show_num)
-    shops = Shop.get_distance(lat_now, lng_now, genre_array, show_num)
+  def self.beer_shops(lat_now, lng_now, genre_array, show_num)
+    shops = Shop.beer_distance(lat_now, lng_now, genre_array, show_num)
     shops.as_json
     new_shops = []
     shops.each do |shop|
       drinks = []
-      shop.drinks.each do |drink|
-        if genre_array.include?(2)
-          drinks.push([drink.drink_name, drink.drink_price]) if drink.drink_genre.parent_id == 2 || drink.drink_genre.id == 2
-        else
-          drinks.push([drink.drink_name, drink.drink_price]) if genre_array.include?(drink.drink_genre.id)
+      shop_drinks = []
+      if genre_array.include?(2)
+        shop_drinks = shop.drinks.where.not(drink_genre_id: 1)
+      else
+        genre_array.each do |genre|
+          shop_drinks += shop.drinks.where(drink_genre_id: genre)
         end
+      end
+      shop_drinks.each do |drink|
+       drinks.push([drink.drink_name, drink.drink_price])
       end
       shop_json = shop.as_json
       drinks = drinks.sort_by { |_, v| v }
@@ -27,7 +31,7 @@ class Shop < ApplicationRecord
     new_shops.as_json
   end
 
-  def self.get_distance(lat_now, lng_now, genre_array, show_num)
+  def self.beer_distance(lat_now, lng_now, genre_array, show_num)
     if genre_array.include?(2)
       option = '(SELECT `shops`.* FROM `shops` INNER JOIN `shop_drinks` ON `shops`.`id` = `shop_drinks`.`shop_id` WHERE `shop_drinks`.`drink_genre_id` = 2 OR `drink_genre_id` = 3 OR `drink_genre_id` = 4 OR `drink_genre_id` = 5 OR `drink_genre_id` = 6 OR `drink_genre_id` = 7 OR `drink_genre_id` = 8 ) AS drink_genre'
     else

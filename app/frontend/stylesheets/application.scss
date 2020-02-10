@@ -4,13 +4,14 @@ $fa-font-path: "~@fortawesome/fontawesome-free/webfonts";
 @import "~@fortawesome/fontawesome-free/scss/regular";
 @import "~@fortawesome/fontawesome-free/scss/solid";
 @import "~@fortawesome/fontawesome-free/scss/brands";
-@import "./maps";
-@import "./checkbox";
-@import "./selectbox";
-@import "./radiobutton";
 @import "./accordion";
 @import "./about";
+@import "./beer";
 @import "./bubble";
+@import "./checkbox";
+@import "./maps";
+@import "./radiobutton";
+@import "./selectbox";
 
 html, body {
   height: 100%;
