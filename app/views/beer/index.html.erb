@@ -11,19 +11,25 @@
 </head>
 
 <body>
+  <div id="js-loader" class="loader">
+    <div class="cv-spinner">
+      <span class="spinner"></span>
+      <h1 class="loader_message">この処理には時間がかかります</h1>
+    </div>
+  </div>
   <header>
     <nav id="header_nav" class="justify-content-around navbar-dark mx-auto">
       <%= link_to about_path, target:'_blank' do %>
       <%= image_tag '/shugo.png', alt: 'shugo icon', id: 'header_icon' %>
       <% end %>
       <button type="button" id='get_geolocation_btn' class="hd_btn my-1 my-sm-0">現在地</button>
-      <button type="button" id='get_center_btn' class="hd_btn my-1 my-sm-0">この周辺</button>
+      <button type="button" id='get_center_btn' class="hd_btn my-1 my-sm-0">地図の中心</button>
       <div class="form-inline" name='geocode'>
-        <input class="mr-sm-2 bg-light" type="textbox" id="address" placeholder="この地点を検索">
+        <input class="mr-sm-2 bg-light" type="textbox" id="address" placeholder="地点名">
         <input type="button" id="geocode_btn" class="hd_btn my-2 my-sm-0" value="Search">
       </div>
-      <div id="accordion" class="accordion-container">
-        <div class="accordion-content">
+      <div id="accordion" class="submenu-container">
+        <div class="submenu">
           <div class="dropdown mx-2">
             <button type="button" class="hd_btn my-1 my-sm-0" type="button" id='list_dropdown'>
               生ビールの種類
@@ -70,10 +76,6 @@
             </select>
           </div>
         </div>
-        <div class="accordion-title">
-          <i class="far fa-arrow-alt-circle-down"></i>
-          <span class="accordion_span">詳細設定</span>
-        </div>
       </div>
 
     </nav>
@@ -105,6 +107,11 @@
       <p class="footer_message">実際の場所、商品、値段と違う場合がございます。</p>
     </div>
   </main>
+  <div class="a_tag_image">
+    <%= link_to beer_path, target:'_blank' do %>
+    <%= image_tag '/sake_atag.png', class: 'path_icon' %>
+    <% end %>
+  </div>
   <script>
     let map
     let mapCounter = 0
@@ -124,7 +131,6 @@
     let shopsWraper = document.getElementById('shops_wraper')
 
     function initMap() {
-      console.log(mapCounter)
       if (mapCounter == 0) {
         geocoder = new google.maps.Geocoder()
 
@@ -179,10 +185,11 @@
           mapWindow,
           mapOptions
         );
-        console.log(mapCounter)
-        mapCounter += 1
-        console.log(mapCounter)
       }
+    }
+
+    function checkSerchForm() {
+      return true
     }
 
     function showMenu() {
@@ -224,6 +231,7 @@
         drinkGenres = genre_array
       }
       getShopNum()
+      $('#js-loader').fadeIn('slow')
 
       let prm = {
         now_lat: lat,
@@ -232,13 +240,14 @@
         shop_num: shopNum
       };
 
-      fetch('/fetch_shops', {
+      fetch('/fetch_beers', {
         method: "POST",
         body: JSON.stringify(prm),
         headers: {
           'Content-Type': 'application/json'
         }
       }).then(function (response) {
+        $('#js-loader').fadeOut(400);
         return response.json()
       }).then(function (shops) {
         showMenu()
@@ -370,18 +379,7 @@
         }
       }
     };
-
-    window.onunload = function() {
-      map = null
-      console.log(map)
-    }
-
-    window.onload = function() {
-    console.log('ページ読み込み完了');
-    };
-
   </script>
-  <% map_conter = 0 %>
   <script src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['API_KEY'] %>&callback=initMap"></script>
 </body>
 

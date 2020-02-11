@@ -11,56 +11,26 @@
 </head>
 
 <body>
+  <div id="js-loader" class="loader">
+    <div class="cv-spinner">
+      <span class="spinner"></span>
+      <h1 class="loader_message">この処理には時間がかかります</h1>
+    </div>
+  </div>
   <header>
     <nav id="header_nav" class="justify-content-around navbar-dark mx-auto">
       <%= link_to about_path, target:'_blank' do %>
       <%= image_tag '/shugo.png', alt: 'shugo icon', id: 'header_icon' %>
       <% end %>
       <button type="button" id='get_geolocation_btn' class="hd_btn my-1 my-sm-0">現在地</button>
-      <button type="button" id='get_center_btn' class="hd_btn my-1 my-sm-0">この周辺</button>
+      <button type="button" id='get_center_btn' class="hd_btn my-1 my-sm-0">地図の中心</button>
       <div class="form-inline" name='geocode'>
-        <input class="mr-sm-2 bg-light" type="textbox" id="address" placeholder="この地点を検索">
+        <input class="mr-sm-2 bg-light" type="textbox" id="address" placeholder="地点名">
         <input type="button" id="geocode_btn" class="hd_btn my-2 my-sm-0" value="Search">
       </div>
-      <div id="accordion" class="accordion-container">
-        <div class="accordion-content">
-          <div class="dropdown mx-2">
-            <button type="button" class="hd_btn my-1 my-sm-0" type="button" id='list_dropdown'>
-              生ビールの種類
-            </button>
-            <div class="dropdown-menu beer_lists checkbox">
-              <form name="beer_form">
-                <div class="check_item p-1">
-                  <input type="checkbox" name="beer_items" class="dropdown-item my-1" id="check_nama" value="2">
-                  <label for="check_nama">全ての生ビール</label>
-                </div>
-                <div class="check_item p-1">
-                  <input type="checkbox" name="beer_items" class="dropdown-item my-1" id="check_bin" value="3">
-                  <label for="check_bin">瓶ビール</label>
-                </div>
-                <div class="check_item p-1">
-                  <input type="checkbox" name="beer_items" class="dropdown-item my-1" id="check_asahi" value="4">
-                  <label for="check_asahi">スーパードライ<br>(アサヒ系)</label>
-                </div>
-                <div class="check_item p-1">
-                  <input type="checkbox" name="beer_items" class="dropdown-item my-1" id="check_kirin" value="5">
-                  <label for="check_kirin">一番搾り<br>(キリン系)</label>
-                </div>
-                <div class="check_item p-1">
-                  <input type="checkbox" name="beer_items" class="dropdown-item my-1" id="check_sapporo" value="6">
-                  <label for="check_sapporo">黒ラベル<br>(サッポロ系)</label>
-                </div>
-                <div class="check_item p-1">
-                  <input type="checkbox" name="beer_items" class="dropdown-item my-1" id="check_suntory" value="7">
-                  <label for="check_suntory">プレミアムモルツ<br>(サントリー系)</label>
-                </div>
-                <div class="check_item p-1">
-                  <input type="checkbox" name="beer_items" class="dropdown-item my-1" id="check_ebisu" value="8">
-                  <label for="check_ebisu">ヱビス</label>
-                </div>
-              </form>
-            </div>
-          </div>
+      <div id="accordion" class="submenu-container">
+        <div class="submenu">
+          <input class="my-1 bg-light" type="textbox" id="drink_serch" placeholder="ドリンク名(必須)">
           <div class="selectbox sel_num mx-2">
             <select name="件数" id="select_num">
               <option value="20" hidden>取得件数</option>
@@ -70,12 +40,7 @@
             </select>
           </div>
         </div>
-        <div class="accordion-title">
-          <i class="far fa-arrow-alt-circle-down"></i>
-          <span class="accordion_span">詳細設定</span>
-        </div>
       </div>
-
     </nav>
   </header>
 
@@ -105,6 +70,11 @@
       <p class="footer_message">実際の場所、商品、値段と違う場合がございます。</p>
     </div>
   </main>
+  <div class="a_tag_image">
+    <%= link_to beer_path, target:'_blank' do %>
+    <%= image_tag '/beer_atag.png', class: 'path_icon' %>
+    <% end %>
+  </div>
   <script>
     let map
     let mapCounter = 0
@@ -117,14 +87,13 @@
     let mapOptions = {}
     let mapStyles = []
     let list = []
-    let genre_array = []
+    let serchWord
     let shopNum = null
     let mapWindow = document.getElementById('map')
     let menuSidebar = document.getElementById('menu')
     let shopsWraper = document.getElementById('shops_wraper')
 
     function initMap() {
-      console.log(mapCounter)
       if (mapCounter == 0) {
         geocoder = new google.maps.Geocoder()
 
@@ -179,9 +148,19 @@
           mapWindow,
           mapOptions
         );
-        console.log(mapCounter)
-        mapCounter += 1
-        console.log(mapCounter)
+      }
+    }
+
+    function checkSerchForm() {
+      serchWord = document.getElementById("drink_serch").value;
+      if (serchWord.length < 2) {
+        alert('ドリンク名は2文字以上入力してください')
+        return false
+      } else if (serchWord.includes(' ') || serchWord.includes('　')) {
+        alert('ドリンク名に空白は含まないでください')
+        return false
+      } else {
+        return true
       }
     }
 
@@ -216,29 +195,24 @@
     }
 
     function fetchApi(lat, lng) {
-      getDrinkGenres()
-      let drinkGenres
-      if (genre_array.length === 0) {
-        drinkGenres = [2]
-      } else {
-        drinkGenres = genre_array
-      }
+      serchWord = document.getElementById("drink_serch").value;
       getShopNum()
-
+      $('#js-loader').fadeIn('slow')
       let prm = {
         now_lat: lat,
         now_lng: lng,
-        genre_array: drinkGenres,
+        serch_word: serchWord,
         shop_num: shopNum
       };
 
-      fetch('/fetch_shops', {
+      fetch('/fetch_drinks', {
         method: "POST",
         body: JSON.stringify(prm),
         headers: {
           'Content-Type': 'application/json'
         }
       }).then(function (response) {
+        $('#js-loader').fadeOut(400);
         return response.json()
       }).then(function (shops) {
         showMenu()
@@ -370,18 +344,7 @@
         }
       }
     };
-
-    window.onunload = function() {
-      map = null
-      console.log(map)
-    }
-
-    window.onload = function() {
-    console.log('ページ読み込み完了');
-    };
-
   </script>
-  <% map_conter = 0 %>
   <script src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['API_KEY'] %>&callback=initMap"></script>
 </body>
 

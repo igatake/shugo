@@ -2,7 +2,7 @@ class BeerController < ApplicationController
   skip_before_action :verify_authenticity_token
   def index; end
 
-  def fetch_shops
+  def fetch_beers
     @lat = params[:now_lat]
     @lng = params[:now_lng]
     @drink_genre = params[:genre_array]
