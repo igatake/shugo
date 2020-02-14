@@ -222,6 +222,7 @@
         markerData = shops
         deleteMarkers(markerNum)
         dropMarker(markerData)
+        $('#item-1').trigger("click")
       }).catch(function (ex) {
         console.log('parsing failed', ex)
       })
