@@ -13,6 +13,7 @@ function geolocation() {
           map.setCenter(mapLocation);
           deleteMarkerLocation();
           deleteMarkers(markerNum);
+          jobWatcher = 'geolocation'
           fetchApi(position.coords.latitude, position.coords.longitude);
 
           markerLocation = new google.maps.Marker({

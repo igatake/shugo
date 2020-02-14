@@ -9,6 +9,7 @@ function codeAddress() {
         if (status == "OK") {
           deleteMarkerLocation();
           deleteMarkers(markerNum);
+          jobWatcher = 'codeAddress'
           let mapLocation = results[0].geometry.location;
           map.setCenter(mapLocation);
           markerLocation = new google.maps.Marker({

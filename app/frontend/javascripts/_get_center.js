@@ -3,6 +3,7 @@ function getFromCenter() {
     let latlng = map.getCenter();
     deleteMarkerLocation();
     deleteMarkers(markerNum);
+    jobWatcher = 'getCenter'
     markerLocation = new google.maps.Marker({
       map: map,
       animation: google.maps.Animation.DROP,

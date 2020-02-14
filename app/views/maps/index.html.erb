@@ -92,6 +92,7 @@
     let mapWindow = document.getElementById('map')
     let menuSidebar = document.getElementById('menu')
     let shopsWraper = document.getElementById('shops_wraper')
+    let jobWatcher = null
 
     function initMap() {
       if (mapCounter == 0) {
@@ -198,11 +199,13 @@
       serchWord = document.getElementById("drink_serch").value;
       getShopNum()
       $('#js-loader').fadeIn('slow')
+      console.log(jobWatcher)
       let prm = {
         now_lat: lat,
         now_lng: lng,
         serch_word: serchWord,
-        shop_num: shopNum
+        shop_num: shopNum,
+        job: jobWatcher
       };
 
       fetch('/fetch_drinks', {
