@@ -154,8 +154,8 @@
 
     function checkSerchForm() {
       serchWord = document.getElementById("drink_serch").value;
-      if (serchWord.length < 2) {
-        alert('ドリンク名は2文字以上入力してください')
+      if (serchWord.length < 1) {
+        alert('ドリンク名を入力してください')
         return false
       } else if (serchWord.includes(' ') || serchWord.includes('　')) {
         alert('ドリンク名に空白は含まないでください')
