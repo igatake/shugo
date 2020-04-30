@@ -10,7 +10,7 @@
     "bootstrap": "^4.4.1",
     "bootstrap-material-design": "^4.1.2",
     "core-js": "3",
-    "jquery": "^3.4.1",
+    "jquery": "^3.5.0",
     "materialize-css": "^1.0.0",
     "popper.js": "^1.16.0",
     "turbolinks": "^5.2.0"
