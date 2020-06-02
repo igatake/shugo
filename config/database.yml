@@ -10,7 +10,6 @@ default: &default
   collation: utf8mb4_general_ci
   encodeing: utf8mb4
   pool: 5
-  socket: /tmp/mysql.sock
 
 development:
   <<: *default
@@ -18,6 +17,7 @@ development:
   username: <%= ENV['RAILS_DATABASE_USER'] %>
   password: <%= ENV['RAILS_DATABASE_PASSWORD'] %>
   host: localhost
+  socket: /tmp/mysql.sock
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
@@ -31,3 +31,4 @@ production:
   database: shugo_production
   username: root
   password:
+  socket: /var/lib/mysql/mysql.sock

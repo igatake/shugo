@@ -31,7 +31,7 @@ namespace :crawl_hp do
       sleep(rand.rand(1.0..3.0) + sec.to_i)
     end
 
-    (0..575).each do |i|
+    (1..675).each do |i|
       begin
         p url = "https://www.hotpepper.jp/yoyaku/SA11/bgn#{i}"
         html = URI(url).read
@@ -50,9 +50,23 @@ namespace :crawl_hp do
             ".//a[@class='fs18 bold lh22 marB1']"
           ).attribute("href").text
 
-          if Shop.find_by(shop_url: shop_url)
-            puts "#{shop_url} was skipped"
-            next
+          shop = Shop.find_or_initialize_by(shop_url: shop_url)
+	  
+          crawled_date = shop.crawled_at
+          puts "くろー#{crawled_date}"
+          if crawled_date
+            date_diff = date - crawled_date
+	    puts "diff #{date_diff}"
+          else
+            date_diff = 100
+            scrape_log = Logger.new("log/scrape.log", 2, 10 * 1024)
+            scrape_log.info("新掲載 #{shop_url}")
+          end
+
+	  if shop.crawled_at &&
+	     date_diff <= 3
+		puts "#{shop_url} was skipped"
+		next
           end
 
           shop_link = URI("https://www.hotpepper.jp#{shop_url}").read
@@ -68,9 +82,9 @@ namespace :crawl_hp do
             # 店舗の住所取得
             shop_address = doc_each_shop.xpath(".//td/address[position()=1]").text.strip
             
-            shop = Shop.find_or_initialize_by(shop_url: shop_url, shop_address: shop_address)
             sleep(1)
             shop.shop_name = shop_name
+            shop.shop_address = shop_address
             shop.crawled_at = date
             p url
             p shop
@@ -103,7 +117,6 @@ namespace :crawl_hp do
                  (drink_price != 0) && # priceがたまに0のがあるから排除
                  (drink_price <= 1000) #1000円以上のドリンクは飲み放題とかかぶるからなし
                 drink = shop.drinks.find_or_initialize_by(drink_name: drink_name)
-                sleep(0.1)
                 drink.drink_price = drink_price
                 drink.crawled_at = date
                 p drink
@@ -140,7 +153,7 @@ namespace :crawl_hp do
       sleep(rand.rand(1.0..3.0) + sec.to_i)
     end
 
-    (519..573).each do |i|
+    (466..543).each do |i|
       begin
         p url = "https://www.hotpepper.jp/SA11/G001/bgn#{i}"
         html = URI(url).read
@@ -156,11 +169,6 @@ namespace :crawl_hp do
         shops.each do |shop_block|
           # 店舗id取得
           shop_url = p shop_block.to_s.slice(/\/str..........\//)
-
-          if Shop.find_by(shop_url: shop_url)
-            puts "#{shop_url} was skipped"
-            next
-          end
 
           shop_link = URI("https://www.hotpepper.jp#{shop_url}").read
           drink_num = 1
