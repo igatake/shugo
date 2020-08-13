@@ -131,10 +131,12 @@
     let shopsWraper = document.getElementById('shops_wraper')
     let jobWatcher = null
 
+    // GoogleMapAPIでマップを表示
     function initMap() {
       if (mapCounter == 0) {
         geocoder = new google.maps.Geocoder()
 
+        // Mapのスタイルを設定
         mapStyles = [{
             "featureType": "administrative.land_parcel",
             "elementType": "labels",
@@ -171,8 +173,9 @@
           }
         ]
 
+        // Mapのオプションを格納
         mapOptions = {
-          disableDefaultUI: true,
+          disableDefaultUI: true, // GoogleMap由来のボタンなどを表示しない
           zoom: 17, // 拡大倍率
           center: {
             lat: 35.7299504,
@@ -183,8 +186,8 @@
 
 
         map = new google.maps.Map(
-          mapWindow,
-          mapOptions
+          mapWindow, // 表示する場所
+          mapOptions // マップのオプション
         );
       }
     }
@@ -193,71 +196,80 @@
       return true
     }
 
+    // 店舗メニューを表示するサイドバーの設定
     function showMenu() {
       if (window.matchMedia("(max-width: 779px)").matches) {
-        mapWindow.style.height = '50%';
+        mapWindow.style.height = '50%'; // スマートデバイス
       } else {
-        mapWindow.style.width = '70%'
+        mapWindow.style.width = '70%' // PC
       }
       menuSidebar.style.display = 'block';
     }
 
+    // ビールのジャンルを取得
     function getDrinkGenres() {
       let genreElement = document.beer_form.beer_items
       genre_array = []
       for (let i = 0; i < genreElement.length; i++) {
         if (genreElement[i].checked) {
-          genre_array.push(parseInt(genreElement[i].value));
+          genre_array.push(parseInt(genreElement[i].value)); // 選択されたIDをArrayに格納
         }
       }
     }
 
+    // 表示する件数を取得
     function getShopNum() {
       let shopElement = document.getElementById("select_num")
       shopNum = shopElement.value
     }
 
+    // サイドバーを綺麗にする処理
     function eraseshopsWraper() {
       if (document.getElementsByClassName('shop_list').length > 0) {
         while (shopsWraper.firstChild) shopsWraper.removeChild(shopsWraper.firstChild);
       }
     }
 
+    // fetchAPIを使って非同期処理
     function fetchApi(lat, lng) {
-      getDrinkGenres()
+      getDrinkGenres() // DrinkGenreを取得
       let drinkGenres
+      //　DrinkGenreが選択されていなかった場合は、生ビール全てを検索
       if (genre_array.length === 0) {
         drinkGenres = [2]
       } else {
         drinkGenres = genre_array
       }
-      getShopNum()
-      $('#js-loader').fadeIn('slow')
+      getShopNum() // 表示する件数を取得
+      $('#js-loader').fadeIn('slow') // Loaderを表示
 
-      jobWatcher += 'beer'
+      jobWatcher += 'beer' // ログに残すため
+
+      // beer_controllerに送るパラメーターを格納
       let prm = {
-        now_lat: lat,
-        now_lng: lng,
-        genre_array: drinkGenres,
-        shop_num: shopNum,
-        job: jobWatcher
+        now_lat: lat, // 検索する緯度
+        now_lng: lng, // 検索する経度
+        genre_array: drinkGenres, // DrinkGenreを格納したArray
+        shop_num: shopNum, // 取得件数
+        job: jobWatcher // logに使う
       };
 
-      fetch('/fetch_beers', {
-        method: "POST",
-        body: JSON.stringify(prm),
+      // fetchAPI
+      fetch('/fetch_beers', { // 送信するURL
+        method: "POST", // method
+        body: JSON.stringify(prm), // 送る内容
         headers: {
           'Content-Type': 'application/json'
         }
-      }).then(function (response) {
+      }).then(function (response) { // 
         $('#js-loader').fadeOut(400);
         return response.json()
       }).then(function (shops) {
         showMenu()
         markerData = shops
-        deleteMarkers(markerNum)
-        dropMarker(markerData)
-        $('#item-1').trigger("click")
+        deleteMarkers(markerNum) // 地図上のマーカーを削除
+        dropMarker(markerData) // マーカーを地図上に落とす
+        $('#item-1').trigger("click") // サイドバーの順番が近い順にならない問題を応急的に対応
       }).catch(function (ex) {
         console.log('parsing failed', ex)
       })
