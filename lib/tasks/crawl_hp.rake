@@ -455,24 +455,24 @@ namespace :crawl_hp do
         scrape_log.error("Not Found #{shop.shop_name} : #{shop.shop_address}")
       end
     end
-
-    desc "remove old data"
-    task :remove_old_shop_data => :environment do
-      today = Date.today
-      shops = Shop.all
-      shops.each do |shop|
-        if today - shop.crawled_at >= 100
-          shop.destroy
-        end
-      end
-    end
-
+    
     shops = Shop.where(shop_lng: nil)
     puts shops.count
     shops.each do |shop|
       geocode(shop)
     end
   end
+  
+  desc "remove old data"
+   task :remove_old_shop_data => :environment do
+     today = Date.today
+     shops = Shop.all
+     shops.each do |shop|
+       if today - shop.crawled_at >= 100
+         shop.destroy
+       end 
+     end
+   end
 
   desc "scraping sequence"
   task scraping_sequence: [:crawring_hp, :drink_classification, :add_lat_and_lng] do
