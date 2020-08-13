@@ -51,22 +51,22 @@ namespace :crawl_hp do
           ).attribute("href").text
 
           shop = Shop.find_or_initialize_by(shop_url: shop_url)
-	  
+    
           crawled_date = shop.crawled_at
           puts "くろー#{crawled_date}"
           if crawled_date
             date_diff = date - crawled_date
-	    puts "diff #{date_diff}"
+            puts "diff #{date_diff}"
           else
             date_diff = 100
             scrape_log = Logger.new("log/scrape.log", 2, 10 * 1024)
             scrape_log.info("新掲載 #{shop_url}")
           end
 
-	  if shop.crawled_at &&
-	     date_diff <= 3
-		puts "#{shop_url} was skipped"
-		next
+          if shop.crawled_at &&
+             date_diff <= 3
+            puts "#{shop_url} was skipped"
+            next
           end
 
           shop_link = URI("https://www.hotpepper.jp#{shop_url}").read
@@ -168,7 +168,7 @@ namespace :crawl_hp do
 
         shops.each do |shop_block|
           # 店舗id取得
-          shop_url = p shop_block.to_s.slice(/\/str..........\//)
+          shop_url = p shop_block.to_s.slice(%r{/str........../})
 
           shop_link = URI("https://www.hotpepper.jp#{shop_url}").read
           drink_num = 1
@@ -453,6 +453,17 @@ namespace :crawl_hp do
       else
         scrape_log = Logger.new("log/scrape.log", 2, 10 * 1024)
         scrape_log.error("Not Found #{shop.shop_name} : #{shop.shop_address}")
+      end
+    end
+
+    desc "remove old data"
+    task :remove_old_shop_data => :environment do
+      today = Date.today
+      shops = Shop.all
+      shops.each do |shop|
+        if today - shop.crawled_at >= 100
+          shop.destroy
+        end
       end
     end
 
